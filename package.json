@@ -1,0 +1,89 @@
+{
+  "name": "my-app",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "https://Bereket613.github.io/bereket-portfolio",
+  "dependencies": {
+    "@emailjs/browser": "^4.4.1",
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "@testing-library/user-event": "^13.5.0",
+    "framer-motion": "^12.9.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^7.5.3",
+    "react-scripts": "5.0.1",
+    "react-scroll": "^1.9.3",
+    "react-toastify": "^11.0.5",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "**/*.ts",
+          "**/*.tsx"
+        ],
+        "extends": [
+          "plugin:@typescript-eslint/recommended"
+        ],
+        "parser": "@typescript-eslint/parser",
+        "parserOptions": {
+          "ecmaVersion": 2018,
+          "sourceType": "module",
+          "ecmaFeatures": {
+            "jsx": true
+          },
+          "warnOnUnsupportedTypeScriptVersion": true
+        },
+        "rules": {
+          "@typescript-eslint/no-angle-bracket-type-assertion": "warn",
+          "@typescript-eslint/no-array-constructor": "warn",
+          "@typescript-eslint/no-namespace": "error",
+          "@typescript-eslint/no-unused-vars": [
+            "warn",
+            {
+              "args": "none",
+              "ignoreRestSiblings": true
+            }
+          ],
+          "@typescript-eslint/no-useless-constructor": "warn"
+        }
+      }
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.59.11",
+    "@typescript-eslint/parser": "^5.59.11",
+    "eslint": "^8.49.0",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-plugin-react": "^7.33.2",
+    "gh-pages": "^6.3.0"
+  }
+}

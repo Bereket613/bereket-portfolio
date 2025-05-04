@@ -1,0 +1,170 @@
+/* About Page Styling */
+.about-page {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: #e6f1ff;
+  min-height: 100vh;
+  padding: 4rem 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.about-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.about-content {
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.about-title {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #64ffda;
+  position: relative;
+  display: inline-block;
+}
+
+.about-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #64ffda, transparent);
+  border-radius: 3px;
+}
+
+.about-description {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  color: #ccd6f6;
+}
+
+.about-description strong {
+  color: #64ffda;
+  font-weight: 600;
+}
+
+/* Grid Layout */
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.about-card {
+  background: rgba(23, 42, 69, 0.5);
+  border-radius: 15px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(100, 255, 218, 0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.about-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(100, 255, 218, 0.2);
+  border-color: rgba(100, 255, 218, 0.3);
+}
+
+.about-card h3 {
+  color: #64ffda;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.about-card p, .about-card li {
+  color: #a8b2d1;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.about-card ul {
+  padding-left: 1.2rem;
+}
+
+.about-card li {
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.about-card li::before {
+  content: '▹';
+  position: absolute;
+  left: -1.2rem;
+  color: #64ffda;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .about-content {
+    padding: 2rem;
+  }
+  
+  .about-title {
+    font-size: 2rem;
+  }
+  
+  .about-description {
+    font-size: 1rem;
+  }
+  
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-page {
+    padding: 2rem 1rem;
+  }
+  
+  .about-content {
+    padding: 1.5rem;
+  }
+  
+  .about-title {
+    font-size: 1.8rem;
+  }
+}
+
+/* Decorative Elements */
+.about-content::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(100, 255, 218, 0.1) 0%, transparent 70%);
+  z-index: -1;
+}
+
+.about-content::after {
+  content: '';
+  position: absolute;
+  bottom: -100px;
+  left: -50px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(100, 255, 218, 0.05) 0%, transparent 70%);
+  z-index: -1;
+}
