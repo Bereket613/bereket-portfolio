@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+ HEAD
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -71,4 +71,5 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
 =======
 # bereket-portfolio
->>>>>>> 3ec5d94aec60abf14cdcfdf47e82e6b4739a963d
+
+This is my React-based portfolio website hosted on GitHub Pages 80b7bf0b400447617eebe29716e50f9810e71fa0
