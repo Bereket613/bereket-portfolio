@@ -2,17 +2,19 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    text-decoration: none;
-    background: transparent;
-    font-family: 'poppins',sans-serif;
-}
-body {
-    background: rgb(30,30,30);
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  body {
+    background: rgb(30, 30, 30);
     color: white;
-    overflow: hidden;
-    overflow-y: scroll;
-}
-
-
-
-
+    overflow-x: hidden;
+  }
+  
+  /* Ensure containers don't overflow */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  
