@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/bereket-portfolio/static/css/main.8be1726d.css",
-    "main.js": "/bereket-portfolio/static/js/main.3acb9ed0.js",
+    "main.css": "/bereket-portfolio/static/css/main.2f48401f.css",
+    "main.js": "/bereket-portfolio/static/js/main.9d81a38f.js",
     "static/media/ML.png": "/bereket-portfolio/static/media/ML.d6c5a0691c496d3ec95a.png",
     "static/media/AI.png": "/bereket-portfolio/static/media/AI.198bed3f5d864343bd0d.png",
     "static/media/logo.png": "/bereket-portfolio/static/media/logo.6ac9b86d0d38eae57ddf.png",
@@ -17,11 +17,11 @@
     "static/media/fa-v4compatibility.ttf": "/bereket-portfolio/static/media/fa-v4compatibility.da94ef451f4969af06e6.ttf",
     "static/media/fa-v4compatibility.woff2": "/bereket-portfolio/static/media/fa-v4compatibility.ea8f94e1d22e0d35ccd4.woff2",
     "index.html": "/bereket-portfolio/index.html",
-    "main.8be1726d.css.map": "/bereket-portfolio/static/css/main.8be1726d.css.map",
-    "main.3acb9ed0.js.map": "/bereket-portfolio/static/js/main.3acb9ed0.js.map"
+    "main.2f48401f.css.map": "/bereket-portfolio/static/css/main.2f48401f.css.map",
+    "main.9d81a38f.js.map": "/bereket-portfolio/static/js/main.9d81a38f.js.map"
   },
   "entrypoints": [
-    "static/css/main.8be1726d.css",
-    "static/js/main.3acb9ed0.js"
+    "static/css/main.2f48401f.css",
+    "static/js/main.9d81a38f.js"
   ]
 }
