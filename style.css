@@ -11,13 +11,11 @@
     overflow-x: hidden;
   }
   
-  /* Ensure containers don't overflow */
   .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 1rem;
   }
-  /* Add to your existing index.css */
 :root {
   --max-width: 1200px;
   --mobile-padding: 1rem;
