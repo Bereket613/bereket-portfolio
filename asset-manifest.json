@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/bereket-portfolio/static/css/main.f362224a.css",
-    "main.js": "/bereket-portfolio/static/js/main.92472c09.js",
+    "main.js": "/bereket-portfolio/static/js/main.92d0a1ed.js",
     "static/media/ML.png": "/bereket-portfolio/static/media/ML.d6c5a0691c496d3ec95a.png",
     "static/media/AI.png": "/bereket-portfolio/static/media/AI.198bed3f5d864343bd0d.png",
     "static/media/logo.png": "/bereket-portfolio/static/media/logo.6ac9b86d0d38eae57ddf.png",
@@ -18,10 +18,10 @@
     "static/media/fa-v4compatibility.woff2": "/bereket-portfolio/static/media/fa-v4compatibility.ea8f94e1d22e0d35ccd4.woff2",
     "index.html": "/bereket-portfolio/index.html",
     "main.f362224a.css.map": "/bereket-portfolio/static/css/main.f362224a.css.map",
-    "main.92472c09.js.map": "/bereket-portfolio/static/js/main.92472c09.js.map"
+    "main.92d0a1ed.js.map": "/bereket-portfolio/static/js/main.92d0a1ed.js.map"
   },
   "entrypoints": [
     "static/css/main.f362224a.css",
-    "static/js/main.92472c09.js"
+    "static/js/main.92d0a1ed.js"
   ]
 }
