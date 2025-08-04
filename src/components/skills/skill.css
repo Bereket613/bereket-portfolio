@@ -1,0 +1,212 @@
+/* skills.css */
+#skills {
+    padding: 4rem 2rem;
+    background-color: #f8f9fa;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  #skills h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: #2c3e50;
+    position: relative;
+  }
+  
+  #skills h2::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: #3498db;
+    margin: 0.5rem auto;
+    border-radius: 2px;
+  }
+  
+  .skillsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+  
+  .skillsContainer p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #34495e;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 2rem;
+  }
+  
+  /* Changed to single column layout */
+  .skills-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  .skill {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+  
+  .skill:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+  
+  .skill-icon {
+    font-size: 2.5rem;
+    margin-right: 1.5rem;
+    min-width: 50px;
+    text-align: center;
+  }
+  
+  .skill p {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    #skills {
+      padding: 3rem 1.5rem;
+    }
+    
+    .skills-grid {
+      max-width: 100%;
+    }
+    
+    .skill {
+      padding: 1.2rem;
+    }
+    
+    .skill-icon {
+      font-size: 2rem;
+      margin-right: 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .skill {
+      padding: 1rem;
+    }
+    
+    .skill-icon {
+      font-size: 1.8rem;
+      margin-right: 0.8rem;
+    }
+    
+    .skill p {
+      font-size: 1rem;
+    }
+  }
+  .skill:active {
+    transform: scale(0.98);
+  }
+  .project-list {
+    margin-top: 2rem;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 1.25rem;
+  }
+  
+  .project-list li {
+    background: linear-gradient(145deg, #ffffff, #f8faff);
+    margin: 0;
+    padding: 1.25rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 
+      0 4px 6px rgba(0, 0, 0, 0.05),
+      0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: 
+      transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+      box-shadow 0.3s ease,
+      background 0.3s ease;
+    font-size: 1.05rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: #2d3748;
+    border-left: 4px solid transparent;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .project-list li::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, #4f46e5, #7c3aed);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.3s ease;
+  }
+  
+  .project-list li:hover {
+    background: linear-gradient(145deg, #f0f4ff, #e6edff);
+    transform: translateY(-3px);
+    box-shadow: 
+      0 10px 15px rgba(0, 0, 0, 0.1),
+      0 4px 6px rgba(0, 0, 0, 0.05);
+    color: #4f46e5;
+  }
+  
+  .project-list li:hover::before {
+    transform: scaleY(1);
+  }
+  
+  .project-list li:active {
+    transform: translateY(0) scale(0.98);
+  }
+  
+  /* Optional: Add a subtle shine effect on hover */
+  .project-list li:hover::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      to bottom right,
+      rgba(255, 255, 255, 0.3) 0%,
+      rgba(255, 255, 255, 0) 60%
+    );
+    transform: rotate(30deg);
+    pointer-events: none;
+  }
+  
+  /* For better typography */
+  .project-list li {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: 0.01em;
+    line-height: 1.5;
+  }
+  
+  /* Add a small icon before each item */
+  .project-list li {
+    padding-left: 3rem;
+  }
+  
+  .project-list li::marker {
+    content: '→';
+    color: #090216;
+    font-weight: bold;
+    margin-right: 1rem;
+  }

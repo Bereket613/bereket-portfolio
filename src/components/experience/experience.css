@@ -1,0 +1,172 @@
+/* Experience Section Styling */
+.experience-section {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #e2e8f0;
+  padding: 5rem 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.experience-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.experience-title {
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #38bdf8;
+  position: relative;
+  text-align: center;
+}
+
+.experience-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(90deg, #38bdf8, transparent);
+  border-radius: 3px;
+}
+
+.experience-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.experience-card {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(56, 189, 248, 0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.experience-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, #38bdf8, #7dd3fc);
+}
+
+.experience-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(56, 189, 248, 0.2);
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.experience-card h3 {
+  color: #38bdf8;
+  margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+}
+
+.experience-card p {
+  color: #a8b2d1;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.experience-card strong {
+  color: #7dd3fc;
+  font-weight: 600;
+}
+
+.experience-card ul {
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+.experience-card li {
+  color: #cbd5e1;
+  margin-bottom: 0.5rem;
+  position: relative;
+  line-height: 1.6;
+}
+
+.experience-card li::before {
+  content: '▹';
+  position: absolute;
+  left: -1.5rem;
+  color: #38bdf8;
+}
+
+/* Timeline Effect */
+.experience-card::after {
+  content: '';
+  position: absolute;
+  top: 2rem;
+  left: -1rem;
+  width: 2rem;
+  height: 2rem;
+  background: #0f172a;
+  border: 3px solid #38bdf8;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .experience-section {
+    padding: 3rem 1.5rem;
+  }
+  
+  .experience-title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .experience-card {
+    padding: 1.5rem;
+  }
+  
+  .experience-card h3 {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .experience-section {
+    padding: 2rem 1rem;
+  }
+  
+  .experience-title {
+    font-size: 1.8rem;
+  }
+  
+  .experience-card::after {
+    top: 1.5rem;
+    left: -0.8rem;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+/* Decorative Elements */
+.experience-content::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, transparent 70%);
+  z-index: -1;
+}
