@@ -1,0 +1,8 @@
+# Node modules
+my-portfolio/node_modules/
+server/node_modules/
+
+# Env files
+.env
+my-portfolio/.env
+server/.env

@@ -1,0 +1,9 @@
+{
+  "description": "Description of your gist",
+  "public": true,
+  "files": {
+    "filename.txt": {
+      "content": "String content of the file"
+    }
+  }
+}
