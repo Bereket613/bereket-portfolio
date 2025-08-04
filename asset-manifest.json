@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/bereket-portfolio/static/css/main.4f587d99.css",
-    "main.js": "/bereket-portfolio/static/js/main.d04b4357.js",
+    "main.js": "/bereket-portfolio/static/js/main.cef3761c.js",
     "static/media/logo.png": "/bereket-portfolio/static/media/logo.6ac9b86d0d38eae57ddf.png",
     "static/media/fa-solid-900.ttf": "/bereket-portfolio/static/media/fa-solid-900.2582b0e4bcf85eceead0.ttf",
     "static/media/fa-brands-400.ttf": "/bereket-portfolio/static/media/fa-brands-400.1815e00441357e01619e.ttf",
@@ -14,10 +14,10 @@
     "static/media/fa-v4compatibility.woff2": "/bereket-portfolio/static/media/fa-v4compatibility.ea8f94e1d22e0d35ccd4.woff2",
     "index.html": "/bereket-portfolio/index.html",
     "main.4f587d99.css.map": "/bereket-portfolio/static/css/main.4f587d99.css.map",
-    "main.d04b4357.js.map": "/bereket-portfolio/static/js/main.d04b4357.js.map"
+    "main.cef3761c.js.map": "/bereket-portfolio/static/js/main.cef3761c.js.map"
   },
   "entrypoints": [
     "static/css/main.4f587d99.css",
-    "static/js/main.d04b4357.js"
+    "static/js/main.cef3761c.js"
   ]
 }
