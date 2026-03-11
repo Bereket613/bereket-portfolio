@@ -1,12 +1,19 @@
 // src/components/about/About.jsx
 import React from 'react';
 import './about.css';
+import { motion } from 'framer-motion';
 
 const About = () => {
   return (
     <div className="about-page">
       <section className="about-section">
-        <div className="about-content">
+        <motion.div 
+          className="about-content"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.8 }}
+        >
           <h2 className="about-title">About Me</h2>
 
           <p className="about-description">
@@ -25,15 +32,36 @@ const About = () => {
             In the future, I aim to become a professional data scientist and contribute to tech solutions in Ethiopia and globally. Whether it’s predicting trends, analyzing user behavior, or making intelligent bots, I’m excited to keep learning and building meaningful things with data.
           </p>
 
-          <div className="about-grid">
-            <div className="about-card">
+          <motion.div 
+            className="about-grid"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+            variants={{
+              visible: { transition: { staggerChildren: 0.2 } },
+              hidden: {}
+            }}
+          >
+            <motion.div 
+              className="about-card"
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 }
+              }}
+            >
               <h3>🎯 My Mission</h3>
               <p>
                 To bridge the gap between intuitive design and intelligent systems by creating data-powered tools and applications that are both user-friendly and impactful.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="about-card">
+            <motion.div 
+              className="about-card"
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 }
+              }}
+            >
               <h3>🛠 Skills & Tools</h3>
               <ul>
                 <li><strong>Programming:</strong> Python, JavaScript, React, HTML/CSS</li>
@@ -41,31 +69,49 @@ const About = () => {
                 <li><strong>Machine Learning:</strong> Scikit-learn, TensorFlow (beginner)</li>
                 <li><strong>Web:</strong> REST APIs, Git, GitHub</li>
               </ul>
-            </div>
+            </motion.div>
 
-            <div className="about-card">
+            <motion.div 
+              className="about-card"
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 }
+              }}
+            >
               <h3>📊 Favorite Projects</h3>
               <ul>
                 <li>📚 Book Recommendation System</li>
                 <li>🐶 Image Classifier using CNN</li>
                 <li>📈 Stock Price Trend Visualizer</li>
               </ul>
-            </div>
+            </motion.div>
 
-            <div className="about-card">
+            <motion.div 
+              className="about-card"
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 }
+              }}
+            >
               <h3>🎓 Education</h3>
               <p>
                 BSc in Computer Science (in progress)<br />
                 Debre Berhan University, Ethiopia
               </p>
-            </div>
+            </motion.div>
 
-            <div className="about-card">
+            <motion.div 
+              className="about-card"
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 }
+              }}
+            >
               <h3>📍 Based In</h3>
               <p>Addis Ababa, Ethiopia</p>
-            </div>
-          </div>
-        </div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
       </section>
     </div>
   );

@@ -1,6 +1,6 @@
-// src/components/experience/Experience.jsx
 import React from 'react';
 import './experience.css';
+import { experienceData } from '../../data/portfolioData';
 
 const Experience = () => {
   return (
@@ -8,21 +8,21 @@ const Experience = () => {
       <div className="experience-content">
         <h2 className="experience-title">Experience</h2>
         <div className="experience-items">
-
-          <div className="experience-card">
-            <h3>Member & Contributor – Techtonic Tribe Tech Club</h3>
-            <p><strong>Debre Berhan University</strong></p>
-            <p>
-              Actively participate in tech meetups, workshops, and collaborative coding sessions.
-              Contributed to multiple hackathons and group projects focusing on:
-            </p>
-            <ul>
-              <li>Frontend development using HTML, CSS, JavaScript, and React</li>
-              <li>Python scripting and mini automation tasks</li>
-            </ul>
-            <p>Earned certificates of recognition for contributions in all three technologies.</p>
-          </div>
-
+          {experienceData.map((item, index) => (
+            <div key={index} className="experience-card">
+              <h3>{item.title}</h3>
+              <p><strong>{item.subtitle}</strong></p>
+              <p>{item.description}</p>
+              {item.points && (
+                <ul>
+                  {item.points.map((point, idx) => (
+                    <li key={idx}>{point}</li>
+                  ))}
+                </ul>
+              )}
+              {item.footer && <p>{item.footer}</p>}
+            </div>
+          ))}
         </div>
       </div>
     </section>

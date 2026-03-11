@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import './navbar.css';
 import { Link } from 'react-router-dom';
 import logo from '../../assets/logo.png'; 
-
+import { ThemeContext } from '../../ThemeContext';
 
 const Navbar = () => {
+  const { theme, toggleTheme } = useContext(ThemeContext);
+
   return (
     <nav className="navbar">
       {/* Replaced logo img with text or placeholder */}
@@ -18,7 +20,10 @@ const Navbar = () => {
          <Link to="/about" className="desktopMenuItemList">About</Link>
          <Link to="/experience" className="desktopMenuItemList">Experience</Link>
          <Link to="/portfolio" className="desktopMenuItemList">Portfolio</Link>
-
+         
+         <button onClick={toggleTheme} className="theme-toggle">
+            {theme === 'dark' ? '☀️' : '🌙'}
+         </button>
       </div>
       
      {/* <button className="desktopMenuButton">

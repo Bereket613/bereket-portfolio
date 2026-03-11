@@ -6,8 +6,9 @@ import { motion } from 'framer-motion';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './contact.css';
+import { contactConfig } from '../../data/portfolioData';
 
-const countries = [ "Ethiopia", "USA", "UK", "Germany", "India", "Japan", "Canada" ];
+const countries = ["Ethiopia", "USA", "UK", "Germany", "India", "Japan", "Canada"];
 
 const Contact = ({ onClose }) => {
   const form = useRef();
@@ -15,20 +16,26 @@ const Contact = ({ onClose }) => {
   const sendEmail = (e) => {
     e.preventDefault();
 
+    if (!contactConfig.serviceId || !contactConfig.templateId || !contactConfig.publicKey) {
+      toast.error("❌ Email service not configured.");
+      console.error("Missing EmailJS configuration.");
+      return;
+    }
+
     emailjs.sendForm(
-      'service_m0tdp4e',
-      'template_x63wnkr',
+      contactConfig.serviceId,
+      contactConfig.templateId,
       form.current,
-      'rwhc3kE_cMveAdY5Z'
+      contactConfig.publicKey
     )
-    .then(() => {
-      toast.success("✅ Message sent successfully!");
-      form.current.reset();
-      onClose();
-    }, (error) => {
-      toast.error("❌ Message failed to send.");
-      console.error(error.text);
-    });
+      .then(() => {
+        toast.success("✅ Message sent successfully!");
+        form.current.reset();
+        onClose();
+      }, (error) => {
+        toast.error("❌ Message failed to send.");
+        console.error(error.text);
+      });
   };
 
   return (
@@ -43,8 +50,8 @@ const Contact = ({ onClose }) => {
       >
         <button className="close-btn" onClick={onClose}>×</button>
         <div className="contact-header">
-        <h1>Contact Me</h1>
-        <p>If you have a project, collaboration, or opportunity you'd like to discuss, feel free to reach out.</p>
+          <h1>Contact Me</h1>
+          <p>If you have a project, collaboration, or opportunity you'd like to discuss, feel free to reach out.</p>
 
         </div>
         <form ref={form} onSubmit={sendEmail} className="contact-form">

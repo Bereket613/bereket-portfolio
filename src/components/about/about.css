@@ -1,10 +1,11 @@
 /* About Page Styling */
 .about-page {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  color: #e6f1ff;
+  background: var(--bg-color);
+  color: var(--text-color);
   min-height: 100vh;
   padding: 4rem 2rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .about-section {
@@ -14,12 +15,12 @@
 }
 
 .about-content {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--card-bg);
   backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 3rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(128, 128, 128, 0.1);
 }
 
 .about-title {
@@ -45,7 +46,7 @@
   font-size: 1.1rem;
   line-height: 1.8;
   margin-bottom: 1.5rem;
-  color: #ccd6f6;
+  color: var(--text-color);
 }
 
 .about-description strong {
@@ -62,12 +63,13 @@
 }
 
 .about-card {
-  background: rgba(23, 42, 69, 0.5);
+  background: var(--card-bg);
   border-radius: 15px;
   padding: 1.5rem;
   transition: all 0.3s ease;
-  border: 1px solid rgba(100, 255, 218, 0.1);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--text-color);
+  opacity: 0.8;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
 .about-card:hover {
@@ -86,7 +88,7 @@
 }
 
 .about-card p, .about-card li {
-  color: #a8b2d1;
+  color: var(--text-color);
   line-height: 1.6;
   font-size: 0.95rem;
 }

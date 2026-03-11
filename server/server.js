@@ -9,16 +9,15 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const GIST_ID = process.env.GIST_ID;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const GIST_FILENAME = process.env.GIST_FILENAME
+const GIST_FILENAME = process.env.GIST_FILENAME;
 
 // --- INITIAL CONFIGURATION & CHECKS ---
-if (!GIST_ID || !GITHUB_TOKEN) {
-    console.error('CRITICAL ERROR: GIST_ID and GITHUB_TOKEN must be set in your .env file.');
-    console.error('The server cannot function without these.');
-    process.exit(1); // Exit if critical variables are missing
+if (!GIST_ID || !GITHUB_TOKEN || !GIST_FILENAME) {
+    console.error('CRITICAL ERROR: GIST_ID, GITHUB_TOKEN, and GIST_FILENAME must be set in your .env file.');
+    process.exit(1);
 }
 
-// ** This is the critical part for CORS. It allows requests from your frontend. **
+// CORS Configuration
 app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
     methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
@@ -27,44 +26,43 @@ app.use(cors({
 
 app.use(express.json());
 
+// Helper for GitHub API Headers
+const githubHeaders = {
+    'Authorization': `token ${GITHUB_TOKEN}`,
+    'Accept': 'application/vnd.github.v3+json',
+    'User-Agent': 'Portfolio-App-Server'
+};
+
 // --- GITHUB GIST API FUNCTIONS ---
+
 async function getProjectsFromGist() {
-    console.log('Attempting to fetch projects from Gist...');
     try {
         const response = await axios.get(`https://api.github.com/gists/${GIST_ID}`, {
-            headers: {
-                'Authorization': `token ${GITHUB_TOKEN}`,
-                'Accept': 'application/vnd.github.v3+json',
-                'User-Agent': 'Portfolio-App-Server'
-            },
+            headers: githubHeaders,
             timeout: 10000
         });
 
-        console.log("fg", response.data.files, response.data.files)
-
-        if (!response.data.files) {
-            console.error('Error: Gist file not found.', { files: Object.keys(response.data.files) });
-            throw new Error(`Gist file not found. Please ensure it exists.`);
+        const files = response.data.files;
+        if (!files || !files[GIST_FILENAME]) {
+            throw new Error(`Gist file "${GIST_FILENAME}" not found in Gist ${GIST_ID}.`);
         }
-        const content = response.data.files[GIST_FILENAME].content;
+
+        const content = files[GIST_FILENAME].content;
         try {
             return JSON.parse(content);
         } catch (parseError) {
-            console.error('JSON Parse Error:', parseError.message);
-            throw new Error('Invalid JSON format in Gist file. Please correct it manually.');
+            throw new Error('Invalid JSON format in Gist file.');
         }
     } catch (error) {
         const errorMessage = error.response?.data?.message || error.message;
-        const errorStatus = error.response?.status;
-        console.error('GitHub API Get Error:', { status: errorStatus, message: errorMessage });
+        console.error('GitHub API Get Error:', errorMessage);
         throw new Error(`GitHub API Error: ${errorMessage}`);
     }
 }
 
-// ... (updateGist function and API endpoints are the same as before)
 async function updateGist(projects) {
     try {
-        const response = await axios.patch(
+        await axios.patch(
             `https://api.github.com/gists/${GIST_ID}`,
             {
                 files: {
@@ -75,27 +73,24 @@ async function updateGist(projects) {
                 description: `Last updated by Portfolio App: ${new Date().toISOString()}`
             },
             {
-                headers: {
-                    'Authorization': `token ${GITHUB_TOKEN}`,
-                    'Accept': 'application/vnd.github.v3+json',
-                    'User-Agent': 'Portfolio-App-Server'
-                },
+                headers: githubHeaders,
                 timeout: 10000
             }
         );
-        return response.data;
     } catch (error) {
         const errorMessage = error.response?.data?.message || error.message;
+        console.error('GitHub API Update Error:', errorMessage);
         throw new Error(`Failed to update Gist: ${errorMessage}`);
     }
 }
+
+// --- API ENDPOINTS ---
 
 app.get('/api/projects', async (req, res) => {
     try {
         const projects = await getProjectsFromGist();
         res.json(projects);
     } catch (error) {
-        console.error('GET /api/projects failed:', error.message);
         res.status(500).json({ message: error.message });
     }
 });
@@ -106,22 +101,22 @@ app.post('/api/projects', async (req, res) => {
         if (!title || !link) {
             return res.status(400).json({ message: 'Title and Link are required.' });
         }
+
         const projects = await getProjectsFromGist();
-        console.log("post prob" )
-        
+
         const newProject = {
             id: Date.now().toString(),
             title,
             description: description || '',
             link,
-            category: category || 'Data Analysis',
+            category: category || 'General',
             createdAt: new Date().toISOString()
         };
+
         const updatedProjects = [...projects, newProject];
         await updateGist(updatedProjects);
-        res.status(201).json(updatedProjects);
+        res.status(201).json(newProject);
     } catch (error) {
-        console.error('POST /api/projects failed:', error.message);
         res.status(500).json({ message: error.message });
     }
 });
@@ -131,15 +126,60 @@ app.delete('/api/projects/:id', async (req, res) => {
         const { id } = req.params;
         const projects = await getProjectsFromGist();
         const updatedProjects = projects.filter(project => project.id !== id);
+
         if (updatedProjects.length === projects.length) {
             return res.status(404).json({ message: `Project with id ${id} not found.` });
         }
+
         await updateGist(updatedProjects);
-        res.json(updatedProjects);
+        res.json({ message: 'Project deleted successfully' });
     } catch (error) {
-        console.error('DELETE /api/projects failed:', error.message);
         res.status(500).json({ message: error.message });
     }
+});
+
+// --- SIMPLE BOT LOGIC ---
+app.post('/api/chat', (req, res) => {
+    try {
+        const { message } = req.body;
+        if (!message) return res.status(400).json({ error: "Message is required" });
+
+        const lowerMsg = message.toLowerCase();
+        let reply = "I'm not sure how to answer that yet! Try asking me about Bereket's skills, projects, or experience.";
+
+        if (lowerMsg.includes('skill') || lowerMsg.includes('tech') || lowerMsg.includes('tool')) {
+            reply = "Bereket's main skills include Python, JavaScript, React, Pandas, NumPy, Scikit-learn, and beginner TensorFlow.";
+        } else if (lowerMsg.includes('project') || lowerMsg.includes('portfolio') || lowerMsg.includes('build')) {
+            reply = "Bereket has built an AI Chatbot, Book Recommendation System, Stock Price Trend Visualizer, and more! Filter his portfolio above to see them.";
+        } else if (lowerMsg.includes('experience') || lowerMsg.includes('job') || lowerMsg.includes('work')) {
+            reply = "Bereket is an aspiring Data Scientist currently studying at Debre Berhan University in Ethiopia, focusing on Machine Learning and Data Analysis.";
+        } else if (lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('hey')) {
+            reply = "Hello! How can I help you learn more about Bereket today?";
+        } else if (lowerMsg.includes('contact') || lowerMsg.includes('hire') || lowerMsg.includes('reach')) {
+            reply = "You can reach Bereket using the Contact form on this site, or via his LinkedIn and GitHub links in the footer!";
+        }
+
+        // Simulate slight delay for realism
+        setTimeout(() => {
+            res.json({ reply });
+        }, 1000);
+
+    } catch (error) {
+        console.error("Chat API error:", error);
+        res.status(500).json({ error: "Server processing error" });
+    }
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// Silence Chrome Devtools warnings
+app.options('/.well-known/appspecific/com.chrome.devtools.json', cors());
+app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.status(204).end();
 });
 
 app.listen(PORT, () => {

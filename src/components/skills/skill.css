@@ -1,7 +1,7 @@
 /* skills.css */
 #skills {
     padding: 4rem 2rem;
-    background-color: #f8f9fa;
+    background-color: var(--bg-color);
     max-width: 1200px;
     margin: 0 auto;
   }
@@ -10,7 +10,7 @@
     text-align: center;
     font-size: 2.5rem;
     margin-bottom: 2rem;
-    color: #2c3e50;
+    color: var(--text-color);
     position: relative;
   }
   
@@ -33,7 +33,7 @@
   .skillsContainer p {
     font-size: 1.1rem;
     line-height: 1.8;
-    color: #34495e;
+    color: var(--text-color);
     text-align: center;
     max-width: 800px;
     margin: 0 auto 2rem;
@@ -53,7 +53,7 @@
     flex-direction: row;
     align-items: center;
     padding: 1.5rem;
-    background: white;
+    background: var(--card-bg);
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
@@ -75,7 +75,7 @@
   .skill p {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--text-color);
     margin: 0;
   }
   

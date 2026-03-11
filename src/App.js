@@ -12,6 +12,8 @@ import About from './components/about/about';
 import Experience from './components/experience/experience';
 import Terms from './components/terms/terms';
 import Privacy from './components/privacy/privacy';
+import GithubStats from './components/github/github';
+import Chatbot from './components/chatbot/chatbot';
 
 // Portfolio Page
 function PortfolioPage() {
@@ -19,6 +21,7 @@ function PortfolioPage() {
     <>
       <Navbar />
       <Works />
+      <GithubStats />
       <Footer />
     </>
   );
@@ -58,6 +61,7 @@ function HomePage({ showContact, setShowContact }) {
       <Intro onContactClick={() => setShowContact(true)} />
       <Skills />
       <Works />
+      <GithubStats />
 
       {showContact && (
         <div className="contact-modal">
@@ -77,7 +81,7 @@ function App() {
   const [showContact, setShowContact] = useState(false);
 
   return (
-    <Router>
+    <Router basename="/bereket-portfolio">
       <Routes>
         <Route path="/" element={<HomePage showContact={showContact} setShowContact={setShowContact} />} />
         <Route path="/about" element={<AboutPage />} />
@@ -86,6 +90,7 @@ function App() {
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
       </Routes>
+      <Chatbot />
     </Router>
   );
 }
