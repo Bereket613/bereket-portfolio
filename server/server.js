@@ -16,9 +16,14 @@ db.initDb();
 
 // CORS Configuration
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: [
+        'http://localhost:3000',
+        'https://Bereket613.github.io',
+        'https://bereket613.github.io'
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 }));
 
 app.use(express.json());
@@ -270,6 +275,39 @@ app.get('/api/blogs/:id', async (req, res) => {
         const { id } = req.params;
         const result = await db.query('SELECT * FROM blogs WHERE id = $1', [id]);
         if (result.rows.length === 0) return res.status(404).json({ message: 'Blog not found' });
+        res.json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// --- PROFILE ENDPOINTS ---
+app.get('/api/profile', async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM profile LIMIT 1');
+        res.json(result.rows[0] || {});
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.put('/api/profile', authenticateToken, async (req, res) => {
+    try {
+        const { name, title, about, logo_url, email, github, linkedin } = req.body;
+        
+        const check = await db.query('SELECT * FROM profile LIMIT 1');
+        let result;
+        if (check.rows.length === 0) {
+            result = await db.query(
+                'INSERT INTO profile (name, title, about, logo_url, email, github, linkedin) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+                [name, title, about, logo_url, email, github, linkedin]
+            );
+        } else {
+            result = await db.query(
+                'UPDATE profile SET name=$1, title=$2, about=$3, logo_url=$4, email=$5, github=$6, linkedin=$7 WHERE id=$8 RETURNING *',
+                [name, title, about, logo_url, email, github, linkedin, check.rows[0].id]
+            );
+        }
         res.json(result.rows[0]);
     } catch (error) {
         res.status(500).json({ message: error.message });

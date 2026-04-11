@@ -44,3 +44,14 @@ CREATE TABLE IF NOT EXISTS blogs (
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS profile (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255),
+    title VARCHAR(255),
+    about TEXT,
+    logo_url VARCHAR(255),
+    email VARCHAR(255),
+    github VARCHAR(255),
+    linkedin VARCHAR(255)
+);

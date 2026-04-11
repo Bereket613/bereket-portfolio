@@ -1,7 +1,7 @@
 import React from 'react';
 import background from '../../assets/image.png';
-import resumePdf from '../../assets/resume.pdf';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import Button from '../ui/Button';
 
 const Intro = ({ onContactClick }) => {
@@ -44,11 +44,8 @@ const Intro = ({ onContactClick }) => {
             <Button onClick={onContactClick} variant="primary">
                 Contact Me
             </Button>
-            <Button variant="secondary" as="a" href={resumePdf} target="_blank" rel="noopener noreferrer">
-                View Resume
-            </Button>
-            <Button variant="ghost" as="a" href={resumePdf} download="Bereket_Resume.pdf">
-                Download CV
+            <Button variant="secondary" as={Link} to="/cv">
+                View Dynamic CV
             </Button>
         </motion.div>
       </motion.div>

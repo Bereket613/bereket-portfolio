@@ -17,6 +17,7 @@ import Terms from './components/terms/terms';
 import Privacy from './components/privacy/privacy';
 import GithubStats from './components/github/github';
 import Chatbot from './components/chatbot/chatbot';
+import ResumePage from './components/Resume/resume';
 
 // Admin Pages
 import AdminLogin from './pages/admin/Login';
@@ -67,6 +68,17 @@ function BlogPage() {
   );
 }
 
+// CV / Resume Page
+function CVPage() {
+  return (
+    <>
+      <Navbar />
+      <ResumePage />
+      <Footer />
+    </>
+  );
+}
+
 // Home Page
 function HomePage() {
   const [showContact, setShowContact] = useState(false);
@@ -99,6 +111,7 @@ function ThemedApp() {
         <Route path="/experience" element={<ExperiencePage />} />
         <Route path="/portfolio" element={<PortfolioPage />} />
         <Route path="/blog" element={<BlogPage />} />
+        <Route path="/cv" element={<CVPage />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         {/* Admin Routes */}

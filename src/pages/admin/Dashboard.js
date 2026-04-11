@@ -9,6 +9,7 @@ import ManageProjects from './views/ManageProjects';
 import ManageExperiences from './views/ManageExperiences';
 import ManageMessages from './views/ManageMessages';
 import ManageBlogs from './views/ManageBlogs';
+import ManageProfile from './views/ManageProfile';
 
 const AdminLayout = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
@@ -30,6 +31,7 @@ const AdminLayout = () => {
 
   const navItems = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: 'fas fa-chart-line' },
+    { name: 'Profile/CV', path: '/admin/dashboard/profile', icon: 'fas fa-id-card' },
     { name: 'Projects', path: '/admin/dashboard/projects', icon: 'fas fa-project-diagram' },
     { name: 'Experience', path: '/admin/dashboard/experiences', icon: 'fas fa-briefcase' },
     { name: 'Messages', path: '/admin/dashboard/messages', icon: 'fas fa-envelope' },
@@ -105,6 +107,7 @@ const AdminLayout = () => {
           <div className="max-w-7xl mx-auto">
             <Routes>
               <Route path="/" element={<DashboardOverview />} />
+              <Route path="/profile" element={<ManageProfile />} />
               <Route path="/projects" element={<ManageProjects />} />
               <Route path="/experiences" element={<ManageExperiences />} />
               <Route path="/messages" element={<ManageMessages />} />
