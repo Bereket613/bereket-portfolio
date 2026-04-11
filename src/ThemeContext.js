@@ -18,6 +18,11 @@ export const ThemeProvider = ({ children }) => {
   useEffect(() => {
     // Apply theme to document element and save to local storage
     document.documentElement.setAttribute('data-theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
     localStorage.setItem('portfolio-theme', theme);
   }, [theme]);
 

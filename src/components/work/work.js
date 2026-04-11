@@ -1,59 +1,23 @@
 import React, { useState, useEffect } from "react";
-import './work.css';
-import AI from '../../assets/AI.png';
-import ML from '../../assets/ML.png';
-import DataViz from '../../assets/datavisualization.jpg';
-import Python from '../../assets/python.jpg';
 import { motion, AnimatePresence } from "framer-motion";
-
-const categoryImages = {
-    'AI Project': AI,
-    'Machine Learning': ML,
-    'Data Visualization': DataViz,
-    'Python Application': Python,
-    'General': Python
-};
+import api from '../../api';
 
 const Work = () => {
-    const [selected, setSelected] = useState(null);
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [activeFilter, setActiveFilter] = useState('All');
 
     useEffect(() => {
         const fetchProjects = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/projects`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch projects');
-                }
-                const data = await response.json();
-
-                // Transform API data to group by category if needed, 
-                // or just handle the flat list if that's what's expected.
-                // Based on UI, it expects grouped categories.
-                const grouped = data.reduce((acc, project) => {
-                    const existing = acc.find(p => p.title === project.category);
-                    if (existing) {
-                        existing.projectLinks.push({ name: project.title, link: project.link });
-                    } else {
-                        acc.push({
-                            title: project.category,
-                            // Map category to image, fallback to Python if not found or if image is missing
-                            image: categoryImages[project.category] || Python,
-                            description: `Projects in ${project.category}`,
-                            projectLinks: [{ name: project.title, link: project.link }]
-                        });
-                    }
-                    return acc;
-                }, []);
-
-                setProjects(grouped.length > 0 ? grouped : getFallbackProjects());
+                // Now fetching plain flat records from the PostgreSQL API
+                const response = await api.get('/api/projects');
+                setProjects(response.data);
                 setLoading(false);
             } catch (err) {
                 console.error("Error fetching projects:", err);
                 setError(err.message);
-                setProjects(getFallbackProjects());
                 setLoading(false);
             }
         };
@@ -61,139 +25,146 @@ const Work = () => {
         fetchProjects();
     }, []);
 
-    const getFallbackProjects = () => [
-        {
-            image: AI,
-            title: "AI Project",
-            description: "Advanced artificial intelligence implementation",
-            projectLinks: [
-                { name: "Chat Bot", link: "https://github.com/Bereket613/-AI-Chatbot-using-NLP-TF-IDF" },
-                { name: "Rock Paper Scissors Game", link: "https://github.com/Bereket613/rock-paper-scissors-bot" },
-                { name: "Chat Bot v2", link: "https://github.com/Bereket613/AI-ChatBot" }
-            ]
-        },
-        {
-            image: ML,
-            title: "Machine Learning",
-            description: "Predictive modeling and analysis",
-            projectLinks: [
-                { name: "Diabetes Prediction", link: "https://github.com/Bereket613/Diabetes-ML-Project" },
-                { name: "Book Recommendation", link: "https://github.com/Bereket613/Book-Recommendation-System-using-K-Nearest-Neighbors" },
-                { name: "SMS Spam Classification", link: "https://github.com/Bereket613/Book-Recommendation-System-using-K-Nearest-Neighbors" }
-            ]
-        },
-        {
-            image: DataViz,
-            title: "Data Visualization",
-            description: "Interactive data dashboards",
-            projectLinks: [
-                { name: "EDH (2016) Data Analysis", link: "https://github.com/Bereket613/EDH-Data-Analysis" },
-                { name: "Age vs Salary Analysis", link: "https://github.com/Bereket613/-Age-vs-Salary-Analysis-Exploratory-Explanatory-Data-Visualization-in-Python" }
-            ]
-        },
-        {
-            image: Python,
-            title: "Python Application",
-            description: "Data processing and automation",
-            projectLinks: [
-                { name: "Bank Management System", link: "https://github.com/Bereket613/-NEGAT-Bank-Management-System" },
-                { name: "Task Scheduler", link: "https://github.com/Bereket613/-Priority-Based-Task-Scheduler-in-Python" }
-            ]
-        }
-    ];
-
-    const [activeFilter, setActiveFilter] = useState('All');
-
-    const categories = ['All', ...new Set((projects.length > 0 ? projects : getFallbackProjects()).map(p => p.title))];
-
-    const handleImageClick = (index) => {
-        setSelected(selected === index ? null : index);
-    };
+    const categories = ['All', ...new Set(projects.map(p => p.category).filter(Boolean))];
 
     const filteredProjects = projects.filter(project => 
-        activeFilter === 'All' || project.title === activeFilter
+        activeFilter === 'All' || project.category === activeFilter
     );
 
-    if (loading) return <section className="work-section"><div className="loading">Loading projects...</div></section>;
-    if (error) console.warn("Using fallback projects due to error:", error);
-
     return (
-        <section className="work-section">
-            <h1>Portfolio</h1>
-            <p>
-                I specialize in artificial intelligence, machine learning, data visualization, and Python development.
-                With a strong passion for solving complex problems, I create intelligent systems, predictive models,
-                and interactive dashboards that turn data into insights.
-            </p>
+        <section id="portfolio" className="py-20 px-6 md:px-12 lg:px-24 bg-transparent min-h-screen relative z-10">
+            <div className="max-w-7xl mx-auto">
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="text-center mb-16"
+                >
+                    <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-accent to-accentDark mb-6">Featured My Portfolio</h2>
+                    <p className="max-w-2xl mx-auto text-lg text-gray-600 dark:text-gray-400">
+                        I specialize in artificial intelligence, machine learning, data visualization, and web development. Explore my recent work below.
+                    </p>
+                </motion.div>
 
-            <div className="filter-container">
-                {categories.map(category => (
-                    <button 
-                        key={category} 
-                        className={`filter-btn ${activeFilter === category ? 'active' : ''}`}
-                        onClick={() => {
-                            setActiveFilter(category);
-                            setSelected(null); // Reset selection when filtering
-                        }}
-                    >
-                        {category}
-                    </button>
-                ))}
-            </div>
+                {loading ? (
+                    <div className="flex justify-center items-center h-48">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
+                    </div>
+                ) : error ? (
+                    <div className="text-center text-red-500 bg-red-100 p-4 rounded-lg">
+                        Failed to load projects: {error}
+                    </div>
+                ) : (
+                    <>
+                        {/* Filters */}
+                        <div className="flex flex-wrap justify-center gap-4 mb-12">
+                            {categories.map(category => (
+                                <button 
+                                    key={category} 
+                                    className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
+                                        activeFilter === category 
+                                        ? 'bg-gradient-to-r from-accent to-accentDark text-white shadow-lg shadow-accent/20' 
+                                        : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 shadow-sm border border-slate-200 dark:border-slate-700 hover:border-accent dark:hover:border-accent hover:text-accent dark:hover:text-accent'
+                                    }`}
+                                    onClick={() => setActiveFilter(category)}
+                                >
+                                    {category}
+                                </button>
+                            ))}
+                        </div>
 
-            <motion.div 
-                className="work-container"
-                layout
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.1 }}
-                variants={{
-                    visible: { transition: { staggerChildren: 0.1 } },
-                    hidden: {}
-                }}
-            >
-                <AnimatePresence>
-                {filteredProjects.map((project, index) => (
-                    <motion.div 
-                        className="work-item" 
-                        key={project.title}
-                        layout
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ duration: 0.4 }}
-                        variants={{
-                            hidden: { opacity: 0, y: 30 },
-                            visible: { opacity: 1, y: 0 }
-                        }}
-                    >
-                        <img
-                            src={project.image}
-                            alt={project.title}
-                            className="work-img"
-                            onClick={() => handleImageClick(index)}
-                        />
-                        <h3>{project.title}</h3>
-                        <p>{project.description}</p>
+                        {/* Project Grid */}
+                        <motion.div 
+                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                            layout
+                        >
+                            <AnimatePresence>
+                                {filteredProjects.map((project) => (
+                                    <motion.div 
+                                        key={project.id || project.title}
+                                        layout
+                                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.9, y: -20 }}
+                                        whileHover={{ y: -10, transition: { duration: 0.2 } }}
+                                        transition={{ duration: 0.4, ease: "easeOut" }}
+                                        className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-2xl rounded-2xl overflow-hidden border border-white/50 dark:border-white/10 hover:shadow-[0_20px_40px_rgba(79,70,229,0.25)] hover:border-accent/40 transition-all duration-500 flex flex-col h-full group relative"
+                                    >
+                                        <div className="h-48 overflow-hidden relative bg-gray-200 dark:bg-gray-800">
+                                            {project.image_url ? (
+                                                <img
+                                                    src={project.image_url}
+                                                    alt={project.title}
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                                    <i className="fas fa-image text-4xl"></i>
+                                                </div>
+                                            )}
+                                        </div>
+                                        
+                                        <div className="p-6 flex-grow flex flex-col relative z-10 bg-transparent">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-accent transition-colors">{project.title}</h3>
+                                                <span className="text-xs font-semibold bg-accent/10 text-accent px-3 py-1 rounded-full whitespace-nowrap ml-2">
+                                                    {project.category}
+                                                </span>
+                                            </div>
+                                            
+                                            <p className="text-gray-600 dark:text-gray-400 mb-6 flex-grow line-clamp-3">
+                                                {project.description}
+                                            </p>
 
-                        {selected === index && (
-                            <ul className="project-list">
-                                {project.projectLinks.map((proj, idx) => (
-                                    <li key={idx}>
-                                        <a href={proj.link} target="_blank" rel="noopener noreferrer">
-                                            {proj.name}
-                                        </a>
-                                    </li>
+                                            {/* Tech Stack */}
+                                            {project.tech_stack && Array.isArray(project.tech_stack) && project.tech_stack.length > 0 && (
+                                                <div className="flex flex-wrap gap-2 mb-6">
+                                                    {project.tech_stack.map((tech, idx) => (
+                                                        <span key={idx} className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-1 rounded">
+                                                            {tech}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            <div className="flex gap-4 mt-auto pt-4 border-t border-gray-100 dark:border-gray-800">
+                                                {project.live_demo_url && (
+                                                    <a 
+                                                        href={project.live_demo_url} 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer"
+                                                        className="flex-1 flex items-center justify-center gap-2 bg-accent hover:bg-blue-600 text-white py-2 rounded-lg font-medium transition-colors"
+                                                    >
+                                                        <i className="fas fa-external-link-alt"></i> Live Demo
+                                                    </a>
+                                                )}
+                                                {project.github_url && (
+                                                    <a 
+                                                        href={project.github_url} 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer"
+                                                        className="flex-1 flex items-center justify-center gap-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white py-2 rounded-lg font-medium transition-colors"
+                                                    >
+                                                        <i className="fab fa-github"></i> GitHub
+                                                    </a>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </motion.div>
                                 ))}
-                            </ul>
+                            </AnimatePresence>
+                        </motion.div>
+                        
+                        {filteredProjects.length === 0 && (
+                            <div className="text-center text-gray-500 py-12">
+                                No projects found in this category.
+                            </div>
                         )}
-                    </motion.div>
-                ))}
-                </AnimatePresence>
-            </motion.div>
+                    </>
+                )}
+            </div>
         </section>
     );
 };
 
 export default Work;
-

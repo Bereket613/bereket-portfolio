@@ -3,170 +3,297 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const axios = require('axios');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const db = require('./db');
+
 const app = express();
-
 const PORT = process.env.PORT || 5000;
-const GIST_ID = process.env.GIST_ID;
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const GIST_FILENAME = process.env.GIST_FILENAME;
+const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_jwt_key_here';
 
-// --- INITIAL CONFIGURATION & CHECKS ---
-if (!GIST_ID || !GITHUB_TOKEN || !GIST_FILENAME) {
-    console.error('CRITICAL ERROR: GIST_ID, GITHUB_TOKEN, and GIST_FILENAME must be set in your .env file.');
-    process.exit(1);
-}
+// Initialize DB schema
+db.initDb();
 
 // CORS Configuration
 app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
 
-// Helper for GitHub API Headers
-const githubHeaders = {
-    'Authorization': `token ${GITHUB_TOKEN}`,
-    'Accept': 'application/vnd.github.v3+json',
-    'User-Agent': 'Portfolio-App-Server'
+// --- MIDDLEWARE ---
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    if (!token) return res.status(401).json({ message: 'Access denied' });
+    
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ message: 'Invalid token' });
+        req.user = user;
+        next();
+    });
 };
 
-// --- GITHUB GIST API FUNCTIONS ---
-
-async function getProjectsFromGist() {
+// --- AUTH ROUTES ---
+app.post('/api/admin/setup', async (req, res) => {
+    // Only use this once to create the initial admin user!
     try {
-        const response = await axios.get(`https://api.github.com/gists/${GIST_ID}`, {
-            headers: githubHeaders,
-            timeout: 10000
-        });
-
-        const files = response.data.files;
-        if (!files || !files[GIST_FILENAME]) {
-            throw new Error(`Gist file "${GIST_FILENAME}" not found in Gist ${GIST_ID}.`);
-        }
-
-        const content = files[GIST_FILENAME].content;
-        try {
-            return JSON.parse(content);
-        } catch (parseError) {
-            throw new Error('Invalid JSON format in Gist file.');
-        }
-    } catch (error) {
-        const errorMessage = error.response?.data?.message || error.message;
-        console.error('GitHub API Get Error:', errorMessage);
-        throw new Error(`GitHub API Error: ${errorMessage}`);
+        const { username, password } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await db.query('INSERT INTO admins (username, password_hash) VALUES ($1, $2)', [username, hashedPassword]);
+        res.status(201).json({ message: 'Admin user created successfully' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
-}
+});
 
-async function updateGist(projects) {
+app.post('/api/admin/login', async (req, res) => {
     try {
-        await axios.patch(
-            `https://api.github.com/gists/${GIST_ID}`,
-            {
-                files: {
-                    [GIST_FILENAME]: {
-                        content: JSON.stringify(projects, null, 2)
-                    }
-                },
-                description: `Last updated by Portfolio App: ${new Date().toISOString()}`
-            },
-            {
-                headers: githubHeaders,
-                timeout: 10000
-            }
-        );
-    } catch (error) {
-        const errorMessage = error.response?.data?.message || error.message;
-        console.error('GitHub API Update Error:', errorMessage);
-        throw new Error(`Failed to update Gist: ${errorMessage}`);
+        const { username, password } = req.body;
+        const result = await db.query('SELECT * FROM admins WHERE username = $1', [username]);
+        
+        if (result.rows.length === 0) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+        
+        const admin = result.rows[0];
+        const isMatch = await bcrypt.compare(password, admin.password_hash);
+        
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+        
+        const token = jwt.sign({ id: admin.id, username: admin.username }, JWT_SECRET, { expiresIn: '1d' });
+        res.json({ token, username: admin.username });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
-}
+});
 
-// --- API ENDPOINTS ---
-
+// --- PROJECTS ENDPOINTS ---
 app.get('/api/projects', async (req, res) => {
     try {
-        const projects = await getProjectsFromGist();
-        res.json(projects);
+        const result = await db.query('SELECT * FROM projects ORDER BY created_at DESC');
+        res.json(result.rows);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
-app.post('/api/projects', async (req, res) => {
+app.post('/api/projects', authenticateToken, async (req, res) => {
     try {
-        const { title, description, link, category } = req.body;
-        if (!title || !link) {
-            return res.status(400).json({ message: 'Title and Link are required.' });
-        }
-
-        const projects = await getProjectsFromGist();
-
-        const newProject = {
-            id: Date.now().toString(),
-            title,
-            description: description || '',
-            link,
-            category: category || 'General',
-            createdAt: new Date().toISOString()
-        };
-
-        const updatedProjects = [...projects, newProject];
-        await updateGist(updatedProjects);
-        res.status(201).json(newProject);
+        const { title, description, image_url, tech_stack, live_demo_url, github_url, category } = req.body;
+        const result = await db.query(
+            'INSERT INTO projects (title, description, image_url, tech_stack, live_demo_url, github_url, category) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+            [title, description, image_url, tech_stack, live_demo_url, github_url, category]
+        );
+        res.status(201).json(result.rows[0]);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
-app.delete('/api/projects/:id', async (req, res) => {
+app.put('/api/projects/:id', authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;
-        const projects = await getProjectsFromGist();
-        const updatedProjects = projects.filter(project => project.id !== id);
+        const { title, description, image_url, tech_stack, live_demo_url, github_url, category } = req.body;
+        const result = await db.query(
+            'UPDATE projects SET title=$1, description=$2, image_url=$3, tech_stack=$4, live_demo_url=$5, github_url=$6, category=$7 WHERE id=$8 RETURNING *',
+            [title, description, image_url, tech_stack, live_demo_url, github_url, category, id]
+        );
+        if (result.rows.length === 0) return res.status(404).json({ message: 'Project not found' });
+        res.json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
-        if (updatedProjects.length === projects.length) {
-            return res.status(404).json({ message: `Project with id ${id} not found.` });
-        }
-
-        await updateGist(updatedProjects);
+app.delete('/api/projects/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await db.query('DELETE FROM projects WHERE id = $1 RETURNING *', [id]);
+        if (result.rows.length === 0) return res.status(404).json({ message: 'Project not found' });
         res.json({ message: 'Project deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
-// --- SIMPLE BOT LOGIC ---
-app.post('/api/chat', (req, res) => {
+// --- EXPERIENCE ENDPOINTS ---
+app.get('/api/experiences', async (req, res) => {
     try {
-        const { message } = req.body;
-        if (!message) return res.status(400).json({ error: "Message is required" });
-
-        const lowerMsg = message.toLowerCase();
-        let reply = "I'm not sure how to answer that yet! Try asking me about Bereket's skills, projects, or experience.";
-
-        if (lowerMsg.includes('skill') || lowerMsg.includes('tech') || lowerMsg.includes('tool')) {
-            reply = "Bereket's main skills include Python, JavaScript, React, Pandas, NumPy, Scikit-learn, and beginner TensorFlow.";
-        } else if (lowerMsg.includes('project') || lowerMsg.includes('portfolio') || lowerMsg.includes('build')) {
-            reply = "Bereket has built an AI Chatbot, Book Recommendation System, Stock Price Trend Visualizer, and more! Filter his portfolio above to see them.";
-        } else if (lowerMsg.includes('experience') || lowerMsg.includes('job') || lowerMsg.includes('work')) {
-            reply = "Bereket is an aspiring Data Scientist currently studying at Debre Berhan University in Ethiopia, focusing on Machine Learning and Data Analysis.";
-        } else if (lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('hey')) {
-            reply = "Hello! How can I help you learn more about Bereket today?";
-        } else if (lowerMsg.includes('contact') || lowerMsg.includes('hire') || lowerMsg.includes('reach')) {
-            reply = "You can reach Bereket using the Contact form on this site, or via his LinkedIn and GitHub links in the footer!";
-        }
-
-        // Simulate slight delay for realism
-        setTimeout(() => {
-            res.json({ reply });
-        }, 1000);
-
+        const result = await db.query('SELECT * FROM experiences ORDER BY created_at DESC');
+        res.json(result.rows);
     } catch (error) {
-        console.error("Chat API error:", error);
-        res.status(500).json({ error: "Server processing error" });
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.post('/api/experiences', authenticateToken, async (req, res) => {
+    try {
+        const { role, organization, duration, description, key_achievements, tech_stack } = req.body;
+        const result = await db.query(
+            'INSERT INTO experiences (role, organization, duration, description, key_achievements, tech_stack) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [role, organization, duration, description, key_achievements, tech_stack]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.put('/api/experiences/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { role, organization, duration, description, key_achievements, tech_stack } = req.body;
+        const result = await db.query(
+            'UPDATE experiences SET role=$1, organization=$2, duration=$3, description=$4, key_achievements=$5, tech_stack=$6 WHERE id=$7 RETURNING *',
+            [role, organization, duration, description, key_achievements, tech_stack, id]
+        );
+        if (result.rows.length === 0) return res.status(404).json({ message: 'Experience not found' });
+        res.json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.delete('/api/experiences/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await db.query('DELETE FROM experiences WHERE id = $1 RETURNING *', [id]);
+        if (result.rows.length === 0) return res.status(404).json({ message: 'Experience not found' });
+        res.json({ message: 'Experience deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// --- MESSAGES ENDPOINTS ---
+app.post('/api/messages', async (req, res) => {
+    try {
+        const { name, email, subject, message } = req.body;
+        const result = await db.query(
+            'INSERT INTO messages (name, email, subject, message) VALUES ($1, $2, $3, $4) RETURNING id, name, email, created_at',
+            [name, email, subject, message]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.get('/api/messages', authenticateToken, async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM messages ORDER BY created_at DESC');
+        res.json(result.rows);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.put('/api/messages/:id/read', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await db.query('UPDATE messages SET is_read = TRUE WHERE id = $1 RETURNING *', [id]);
+        if (result.rows.length === 0) return res.status(404).json({ message: 'Message not found' });
+        res.json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.delete('/api/messages/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await db.query('DELETE FROM messages WHERE id = $1 RETURNING *', [id]);
+        if (result.rows.length === 0) return res.status(404).json({ message: 'Message not found' });
+        res.json({ message: 'Message deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// --- BLOGS ENDPOINTS ---
+app.get('/api/blogs', async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM blogs ORDER BY created_at DESC');
+        res.json(result.rows);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.post('/api/blogs', authenticateToken, async (req, res) => {
+    try {
+        const { title, content } = req.body;
+        const result = await db.query(
+            'INSERT INTO blogs (title, content) VALUES ($1, $2) RETURNING *',
+            [title, content]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.put('/api/blogs/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, content } = req.body;
+        const result = await db.query(
+            'UPDATE blogs SET title=$1, content=$2 WHERE id=$3 RETURNING *',
+            [title, content, id]
+        );
+        if (result.rows.length === 0) return res.status(404).json({ message: 'Blog not found' });
+        res.json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.delete('/api/blogs/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await db.query('DELETE FROM blogs WHERE id = $1 RETURNING *', [id]);
+        if (result.rows.length === 0) return res.status(404).json({ message: 'Blog not found' });
+        res.json({ message: 'Blog deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.get('/api/blogs/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await db.query('SELECT * FROM blogs WHERE id = $1', [id]);
+        if (result.rows.length === 0) return res.status(404).json({ message: 'Blog not found' });
+        res.json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// --- ANALYTICS ---
+app.get('/api/analytics', authenticateToken, async (req, res) => {
+    try {
+        const projectsCount = await db.query('SELECT COUNT(*) FROM projects');
+        const messagesCount = await db.query('SELECT COUNT(*) FROM messages');
+        const experiencesCount = await db.query('SELECT COUNT(*) FROM experiences');
+        const unreadMessagesCount = await db.query('SELECT COUNT(*) FROM messages WHERE is_read = FALSE');
+        const blogsCount = await db.query('SELECT COUNT(*) FROM blogs');
+
+        res.json({
+            totalProjects: parseInt(projectsCount.rows[0].count),
+            totalMessages: parseInt(messagesCount.rows[0].count),
+            totalExperiences: parseInt(experiencesCount.rows[0].count),
+            unreadMessages: parseInt(unreadMessagesCount.rows[0].count),
+            totalBlogs: parseInt(blogsCount.rows[0].count)
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 });
 
