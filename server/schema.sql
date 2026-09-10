@@ -68,6 +68,23 @@ CREATE TABLE IF NOT EXISTS skills (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Engineering journal / blog
+CREATE TABLE IF NOT EXISTS blog_posts (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    excerpt VARCHAR(500),
+    content TEXT NOT NULL,
+    cover_image_url VARCHAR(512),
+    category VARCHAR(100),
+    tags TEXT[] DEFAULT '{}',
+    status VARCHAR(20) NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'published', 'archived')),
+    reading_time INT DEFAULT 1,
+    published_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Lightweight anonymous visit tracking for analytics
 CREATE TABLE IF NOT EXISTS visits (
     id SERIAL PRIMARY KEY,
@@ -87,3 +104,6 @@ ALTER TABLE profile ALTER COLUMN resume_url TYPE VARCHAR(512);
 
 CREATE INDEX IF NOT EXISTS idx_visits_visited_at ON visits (visited_at);
 CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages (created_at);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON blog_posts (slug);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_status ON blog_posts (status);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_published_at ON blog_posts (published_at DESC);

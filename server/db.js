@@ -36,9 +36,54 @@ const initDb = async () => {
         }
 
         console.log('Database initialized successfully.');
+
+        // One-time migration: move any legacy blog rows into blog_posts as published articles
+        const legacyCheck = await pool.query(`
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables WHERE table_name = 'blogs'
+            ) AS legacy_exists
+        `);
+        if (legacyCheck.rows[0].legacy_exists) {
+            const legacy = await pool.query('SELECT id, title, content, created_at FROM blogs ORDER BY id');
+            for (const row of legacy.rows) {
+                const exists = await pool.query('SELECT 1 FROM blog_posts WHERE title = $1 LIMIT 1', [row.title]);
+                if (exists.rows.length === 0) {
+                    await pool.query(
+                        `INSERT INTO blog_posts (title, slug, content, status, published_at, created_at, updated_at)
+                         VALUES ($1, $2, $3, 'published', $4, $4, $4)`,
+                        [row.title, await slugify(row.title), row.content, row.created_at]
+                    );
+                }
+            }
+        }
     } catch (err) {
         console.error('Error initializing database:', err);
     }
+};
+
+// Generate a URL-safe slug from a title
+const slugify = async (title) => {
+    let base = String(title)
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/[\s_]+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '') || 'post';
+
+    let slug = base;
+    let counter = 2;
+    while (true) {
+        const clash = await pool.query('SELECT 1 FROM blog_posts WHERE slug = $1 LIMIT 1', [slug]);
+        if (clash.rows.length === 0) return slug;
+        slug = `${base}-${counter++}`;
+    }
+};
+
+// Estimate reading time in whole minutes (minimum 1)
+const readingTime = (content) => {
+    const words = String(content || '').trim().split(/\s+/).filter(Boolean).length;
+    return Math.max(1, Math.round(words / 200));
 };
 
 pool.on('error', (err, client) => {
@@ -49,4 +94,6 @@ pool.on('error', (err, client) => {
 module.exports = {
   query: (text, params) => pool.query(text, params),
   initDb,
+  slugify,
+  readingTime,
 };

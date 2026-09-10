@@ -29,6 +29,9 @@ const Intro = ({ onContactClick }) => {
             <Button variant="primary" as={Link} to="/portfolio">
               View Projects
             </Button>
+            <Button variant="secondary" as={Link} to="/blog">
+              Read Blog
+            </Button>
             <Button variant="secondary" as="a" href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
               <i className="fab fa-github"></i> GitHub
             </Button>

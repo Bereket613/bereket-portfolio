@@ -52,6 +52,69 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
+/* Blog article typography — modeled on a technical publication */
+.blog-prose {
+  @apply text-slate-700 dark:text-slate-300 text-[16.5px] leading-[1.75];
+}
+.blog-prose h1,
+.blog-prose h2,
+.blog-prose h3,
+.blog-prose h4 {
+  @apply font-bold text-slate-900 dark:text-white mt-10 mb-4;
+}
+.blog-prose h1 { @apply text-2xl; }
+.blog-prose h2 { @apply text-xl border-b border-slate-200 dark:border-slate-800 pb-2; }
+.blog-prose h3 { @apply text-lg; }
+.blog-prose h4 { @apply text-base; }
+.blog-prose p { @apply my-4; }
+.blog-prose strong { @apply text-slate-900 dark:text-white font-semibold; }
+.blog-prose a { @apply text-accent dark:text-teal-400 underline underline-offset-2 hover:text-accentDark dark:hover:text-teal-300; }
+.blog-prose ul, .blog-prose ol { @apply my-4 pl-6; }
+.blog-prose ul { @apply list-disc; }
+.blog-prose ol { @apply list-decimal; }
+.blog-prose li { @apply my-1.5; }
+.blog-prose blockquote {
+  @apply border-l-4 border-accent/40 dark:border-teal-400/40 pl-4 my-5 text-slate-600 dark:text-slate-400 italic;
+}
+.blog-prose code {
+  @apply font-mono text-[13.5px] bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-1.5 py-0.5 rounded;
+}
+.blog-prose pre {
+  @apply my-5 p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg overflow-x-auto;
+}
+.blog-prose pre code {
+  @apply bg-transparent dark:bg-transparent p-0 text-[13px] text-slate-800 dark:text-slate-200;
+}
+.blog-prose table {
+  @apply w-full my-5 border-collapse text-sm;
+}
+.blog-prose th {
+  @apply text-left font-semibold text-slate-900 dark:text-white border-b-2 border-slate-200 dark:border-slate-700 px-3 py-2;
+}
+.blog-prose td {
+  @apply border-b border-slate-100 dark:border-slate-800 px-3 py-2 align-top;
+}
+.blog-prose img {
+  @apply max-w-full rounded-lg border border-slate-200 dark:border-slate-800 my-5;
+}
+.blog-prose hr {
+  @apply my-8 border-slate-200 dark:border-slate-800;
+}
+
+/* Dark-mode syntax highlighting (overrides the imported light github theme) */
+.dark .blog-prose .hljs { color: #e6edf3; }
+.dark .blog-prose .hljs-keyword, .dark .blog-prose .hljs-selector-tag, .dark .blog-prose .hljs-literal,
+.dark .blog-prose .hljs-section, .dark .blog-prose .hljs-doctag, .dark .blog-prose .hljs-type,
+.dark .blog-prose .hljs-name, .dark .blog-prose .hljs-strong { color: #ff7b72; }
+.dark .blog-prose .hljs-code, .dark .blog-prose .hljs-string, .dark .blog-prose .hljs-regexp,
+.dark .blog-prose .hljs-template-tag, .dark .blog-prose .hljs-addition, .dark .blog-prose .hljs-meta,
+.dark .blog-prose .hljs-attribute { color: #a5d6ff; }
+.dark .blog-prose .hljs-title, .dark .blog-prose .hljs-title.class_, .dark .blog-prose .hljs-title.function_,
+.dark .blog-prose .hljs-number, .dark .blog-prose .hljs-symbol, .dark .blog-prose .hljs-bullet,
+.dark .blog-prose .hljs-quote { color: #7ee787; }
+.dark .blog-prose .hljs-comment, .dark .blog-prose .hljs-deletion { color: #8b949e; }
+.dark .blog-prose .hljs-emphasis { font-style: italic; }
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

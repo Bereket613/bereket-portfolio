@@ -267,65 +267,6 @@ app.delete('/api/messages/:id', authenticateToken, async (req, res) => {
     }
 });
 
-// --- BLOGS ENDPOINTS ---
-app.get('/api/blogs', async (req, res) => {
-    try {
-        const result = await db.query('SELECT * FROM blogs ORDER BY created_at DESC');
-        res.json(result.rows);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-app.post('/api/blogs', authenticateToken, async (req, res) => {
-    try {
-        const { title, content } = req.body;
-        const result = await db.query(
-            'INSERT INTO blogs (title, content) VALUES ($1, $2) RETURNING *',
-            [title, content]
-        );
-        res.status(201).json(result.rows[0]);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-app.put('/api/blogs/:id', authenticateToken, async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { title, content } = req.body;
-        const result = await db.query(
-            'UPDATE blogs SET title=$1, content=$2 WHERE id=$3 RETURNING *',
-            [title, content, id]
-        );
-        if (result.rows.length === 0) return res.status(404).json({ message: 'Blog not found' });
-        res.json(result.rows[0]);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-app.delete('/api/blogs/:id', authenticateToken, async (req, res) => {
-    try {
-        const { id } = req.params;
-        const result = await db.query('DELETE FROM blogs WHERE id = $1 RETURNING *', [id]);
-        if (result.rows.length === 0) return res.status(404).json({ message: 'Blog not found' });
-        res.json({ message: 'Blog deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-app.get('/api/blogs/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const result = await db.query('SELECT * FROM blogs WHERE id = $1', [id]);
-        if (result.rows.length === 0) return res.status(404).json({ message: 'Blog not found' });
-        res.json(result.rows[0]);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
 
 // --- PROFILE ENDPOINTS ---
 app.get('/api/profile', async (req, res) => {
@@ -401,7 +342,9 @@ app.get('/api/analytics', authenticateToken, async (req, res) => {
         const messagesCount = await db.query('SELECT COUNT(*) FROM messages');
         const experiencesCount = await db.query('SELECT COUNT(*) FROM experiences');
         const unreadMessagesCount = await db.query('SELECT COUNT(*) FROM messages WHERE is_read = FALSE');
-        const blogsCount = await db.query('SELECT COUNT(*) FROM blogs');
+        const blogsCount = await db.query('SELECT COUNT(*) FROM blog_posts');
+        const publishedPostsCount = await db.query("SELECT COUNT(*) FROM blog_posts WHERE status = 'published'");
+        const draftPostsCount = await db.query("SELECT COUNT(*) FROM blog_posts WHERE status = 'draft'");
         const visitorsCount = await db.query('SELECT COUNT(*) FROM visits');
 
         // Last 7 days activity series (fills missing days with zeros)
@@ -428,6 +371,8 @@ app.get('/api/analytics', authenticateToken, async (req, res) => {
             totalExperiences: parseInt(experiencesCount.rows[0].count),
             unreadMessages: parseInt(unreadMessagesCount.rows[0].count),
             totalBlogs: parseInt(blogsCount.rows[0].count),
+            publishedPosts: parseInt(publishedPostsCount.rows[0].count),
+            draftPosts: parseInt(draftPostsCount.rows[0].count),
             totalVisitors: parseInt(visitorsCount.rows[0].count),
             visitsLast7Days: visitsSeries.rows,
             messagesLast7Days: messagesSeries.rows,
@@ -484,6 +429,194 @@ app.delete('/api/skills/:id', authenticateToken, async (req, res) => {
         const result = await db.query('DELETE FROM skills WHERE id = $1 RETURNING *', [id]);
         if (result.rows.length === 0) return res.status(404).json({ message: 'Skill not found' });
         res.json({ message: 'Skill deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// --- BLOG / ENGINEERING JOURNAL ENDPOINTS ---
+
+// Public: paginated, searchable list of published posts
+app.get('/api/blog', async (req, res) => {
+    try {
+        const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+        const limit = Math.min(50, Math.max(1, parseInt(req.query.limit, 10) || 10));
+        const offset = (page - 1) * limit;
+        const search = (req.query.search || '').trim().slice(0, 100);
+        const category = (req.query.category || '').trim().slice(0, 100);
+
+        let where = "WHERE status = 'published'";
+        const params = [];
+        if (search) {
+            params.push(`%${search}%`);
+            where += ` AND (title ILIKE $${params.length} OR excerpt ILIKE $${params.length} OR content ILIKE $${params.length} OR category ILIKE $${params.length})`;
+        }
+        if (category) {
+            params.push(category);
+            where += ` AND category = $${params.length}`;
+        }
+
+        const count = await db.query(`SELECT COUNT(*) FROM blog_posts ${where}`, params);
+        params.push(limit, offset);
+        const posts = await db.query(
+            `SELECT id, title, slug, excerpt, cover_image_url, category, tags, reading_time, published_at, updated_at
+             FROM blog_posts ${where}
+             ORDER BY published_at DESC NULLS LAST, created_at DESC
+             LIMIT $${params.length - 1} OFFSET $${params.length}`,
+            params
+        );
+
+        res.json({
+            posts: posts.rows,
+            total: parseInt(count.rows[0].count),
+            page,
+            pages: Math.max(1, Math.ceil(parseInt(count.rows[0].count) / limit))
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Public: distinct categories of published posts (for filtering UI)
+app.get('/api/blog-categories', async (req, res) => {
+    try {
+        const result = await db.query(
+            "SELECT DISTINCT category FROM blog_posts WHERE status = 'published' AND category IS NOT NULL AND category <> '' ORDER BY category"
+        );
+        res.json(result.rows.map(r => r.category));
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Public: single published post by slug
+app.get('/api/blog/:slug', async (req, res) => {
+    try {
+        const result = await db.query(
+            "SELECT id, title, slug, excerpt, content, cover_image_url, category, tags, reading_time, published_at, updated_at FROM blog_posts WHERE slug = $1 AND status = 'published'",
+            [req.params.slug]
+        );
+        if (result.rows.length === 0) return res.status(404).json({ message: 'Article not found' });
+        res.json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Public: adjacent published posts for prev/next navigation
+app.get('/api/blog/:slug/adjacent', async (req, res) => {
+    try {
+        const current = await db.query("SELECT id, published_at FROM blog_posts WHERE slug = $1 AND status = 'published'", [req.params.slug]);
+        if (current.rows.length === 0) return res.status(404).json({ message: 'Article not found' });
+        const { id, published_at } = current.rows[0];
+        const next = await db.query(
+            "SELECT title, slug FROM blog_posts WHERE status = 'published' AND id <> $1 AND COALESCE(published_at, created_at) > COALESCE($2::timestamp, created_at) ORDER BY COALESCE(published_at, created_at) ASC LIMIT 1",
+            [id, published_at]
+        );
+        const prev = await db.query(
+            "SELECT title, slug FROM blog_posts WHERE status = 'published' AND id <> $1 AND COALESCE(published_at, created_at) < COALESCE($2::timestamp, created_at) ORDER BY COALESCE(published_at, created_at) DESC LIMIT 1",
+            [id, published_at]
+        );
+        res.json({ prev: prev.rows[0] || null, next: next.rows[0] || null });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Admin: list all posts (including drafts)
+app.get('/api/admin/blog', authenticateToken, async (req, res) => {
+    try {
+        const status = req.query.status;
+        let where = '';
+        const params = [];
+        if (status && ['draft', 'published', 'archived'].includes(status)) {
+            params.push(status);
+            where = 'WHERE status = $1';
+        }
+        const result = await db.query(
+            `SELECT id, title, slug, excerpt, content, cover_image_url, category, tags, status, reading_time, published_at, updated_at
+             FROM blog_posts ${where} ORDER BY updated_at DESC`,
+            params
+        );
+        res.json(result.rows);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Admin: create post
+app.post('/api/blog', authenticateToken, async (req, res) => {
+    try {
+        const { title, excerpt, content, cover_image_url, category, tags, status, published_at } = req.body;
+        if (!title || !content || String(title).length > 255) {
+            return res.status(400).json({ message: 'Title (max 255 chars) and content are required' });
+        }
+        const validStatus = ['draft', 'published'].includes(status) ? status : 'draft';
+        const slug = await db.slugify(title);
+        const reading = db.readingTime(content);
+        const tagArray = Array.isArray(tags) ? tags.map(t => String(t).slice(0, 50)).slice(0, 20) : [];
+        const result = await db.query(
+            `INSERT INTO blog_posts (title, slug, excerpt, content, cover_image_url, category, tags, status, reading_time, published_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
+            [
+                title,
+                slug,
+                (excerpt || '').slice(0, 500) || null,
+                content,
+                cover_image_url || null,
+                (category || '').slice(0, 100) || null,
+                tagArray,
+                validStatus,
+                reading,
+                validStatus === 'published' ? (published_at || new Date()) : null
+            ]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Admin: update post
+app.put('/api/blog/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, excerpt, content, cover_image_url, category, tags, status } = req.body;
+        if (!title || !content) return res.status(400).json({ message: 'Title and content are required' });
+
+        const existing = await db.query('SELECT * FROM blog_posts WHERE id = $1', [id]);
+        if (existing.rows.length === 0) return res.status(404).json({ message: 'Post not found' });
+        const old = existing.rows[0];
+
+        const validStatus = ['draft', 'published', 'archived'].includes(status) ? status : old.status;
+        // Regenerate slug only when the title changes
+        const slug = title !== old.title ? await db.slugify(title) : old.slug;
+        const reading = db.readingTime(content);
+        // Fall back to existing values for fields not provided (prevents partial updates wiping data)
+        const tagArray = Array.isArray(tags) ? tags.map(t => String(t).slice(0, 50)).slice(0, 20) : old.tags || [];
+        const finalCategory = category !== undefined ? ((category || '').slice(0, 100) || null) : old.category;
+        const finalExcerpt = excerpt !== undefined ? ((excerpt || '').slice(0, 500) || null) : old.excerpt;
+        const finalCover = cover_image_url !== undefined ? (cover_image_url || null) : old.cover_image_url;
+        const publishedAt = validStatus === 'published' ? (old.published_at || new Date()) : old.published_at;
+
+        const result = await db.query(
+            `UPDATE blog_posts SET title=$1, slug=$2, excerpt=$3, content=$4, cover_image_url=$5, category=$6, tags=$7, status=$8, reading_time=$9, published_at=$10, updated_at=NOW()
+             WHERE id=$11 RETURNING *`,
+            [title, slug, finalExcerpt, content, finalCover, finalCategory, tagArray, validStatus, reading, publishedAt, id]
+        );
+        res.json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Admin: delete post
+app.delete('/api/blog/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await db.query('DELETE FROM blog_posts WHERE id = $1 RETURNING id', [id]);
+        if (result.rows.length === 0) return res.status(404).json({ message: 'Post not found' });
+        res.json({ message: 'Post deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

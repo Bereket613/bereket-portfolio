@@ -11,11 +11,13 @@ import Skills from './components/skills/skill';
 import Works from './components/work/work';
 import Footer from './components/footer/footer';
 import GithubStats from './components/github/github';
+import LatestNotes from './components/blog/LatestNotes';
 
 // Lazy-loaded route components (code splitting)
 const About = lazy(() => import('./components/about/about'));
 const Experience = lazy(() => import('./components/experience/experience'));
 const Blog = lazy(() => import('./components/blog/blog'));
+const BlogArticle = lazy(() => import('./components/blog/BlogArticle'));
 const ResumePage = lazy(() => import('./components/Resume/resume'));
 const Contact = lazy(() => import('./components/contact/contact'));
 const Terms = lazy(() => import('./components/terms/terms'));
@@ -81,6 +83,17 @@ function BlogPage() {
   );
 }
 
+// Blog Article Page
+function BlogArticlePage() {
+  return (
+    <>
+      <Navbar />
+      {renderLazy(BlogArticle)}
+      <Footer />
+    </>
+  );
+}
+
 // CV / Resume Page
 function CVPage() {
   return (
@@ -112,6 +125,7 @@ function HomePage() {
       <Skills />
       <Works />
       <GithubStats />
+      {renderLazy(LatestNotes)}
       <Footer />
     </>
   );
@@ -144,6 +158,7 @@ function ThemedApp() {
         <Route path="/experience" element={<ExperiencePage />} />
         <Route path="/portfolio" element={<PortfolioPage />} />
         <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/:slug" element={<BlogArticlePage />} />
         <Route path="/cv" element={<CVPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/terms" element={renderLazy(Terms)} />

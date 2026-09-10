@@ -7,7 +7,7 @@ import DashboardOverview from './views/DashboardOverview';
 import ManageProjects from './views/ManageProjects';
 import ManageExperiences from './views/ManageExperiences';
 import ManageMessages from './views/ManageMessages';
-import ManageBlogs from './views/ManageBlogs';
+import ManageBlogPosts from './views/ManageBlogPosts';
 import ManageProfile from './views/ManageProfile';
 import ManageSkills from './views/ManageSkills';
 
@@ -35,8 +35,8 @@ const AdminLayout = () => {
     { name: 'Projects', path: '/admin/dashboard/projects', icon: 'fas fa-project-diagram' },
     { name: 'Experience', path: '/admin/dashboard/experiences', icon: 'fas fa-briefcase' },
     { name: 'Skills', path: '/admin/dashboard/skills', icon: 'fas fa-brain' },
+    { name: 'Blog', path: '/admin/dashboard/blog', icon: 'fas fa-feather' },
     { name: 'Messages', path: '/admin/dashboard/messages', icon: 'fas fa-envelope' },
-    { name: 'Blogs', path: '/admin/dashboard/blogs', icon: 'fas fa-blog' },
   ];
 
   return (
@@ -112,8 +112,8 @@ const AdminLayout = () => {
               <Route path="/projects" element={<ManageProjects />} />
               <Route path="/experiences" element={<ManageExperiences />} />
               <Route path="/skills" element={<ManageSkills />} />
+              <Route path="/blog" element={<ManageBlogPosts />} />
               <Route path="/messages" element={<ManageMessages />} />
-              <Route path="/blogs" element={<ManageBlogs />} />
             </Routes>
           </div>
         </main>

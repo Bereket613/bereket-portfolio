@@ -24,6 +24,8 @@ const DashboardOverview = () => {
 
     const statCards = stats ? [
         { title: 'Total Visitors', value: stats.totalVisitors, icon: 'fas fa-users', color: 'bg-indigo-500' },
+        { title: 'Published Posts', value: stats.publishedPosts, icon: 'fas fa-feather', color: 'bg-teal-600' },
+        { title: 'Draft Posts', value: stats.draftPosts, icon: 'fas fa-pencil', color: 'bg-amber-500' },
         { title: 'Total Projects', value: stats.totalProjects, icon: 'fas fa-project-diagram', color: 'bg-blue-500' },
         { title: 'Total Messages', value: stats.totalMessages, icon: 'fas fa-envelope', color: 'bg-green-500' },
         { title: 'Unread Messages', value: stats.unreadMessages, icon: 'fas fa-bell', color: 'bg-red-500' }
