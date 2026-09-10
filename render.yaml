@@ -1,17 +1,11 @@
-# Render Blueprint — deploys the complete backend stack in one click:
-#   1. PostgreSQL database (auto-created, connection string auto-wired)
-#   2. Express API web service (auto-deploys from the main branch)
-#
+# Render Blueprint — deploys the Express API web service.
 # Apply it at: https://render.com/deploy?repo=https://github.com/Bereket613/bereket-portfolio
 #
-# No environment variables need to be entered manually:
-#   DATABASE_URL  -> wired to the database below automatically
-#   JWT_SECRET    -> generated automatically
-
-databases:
-  - name: portfolio-db
-    databaseName: portfolio
-    plan: free
+# When applying, Render will prompt you for DATABASE_URL:
+#   Render Dashboard -> Postgres -> your database -> "Connections" tab ->
+#   copy the "External Database URL" and paste it there.
+#
+# JWT_SECRET is generated automatically — no other input needed.
 
 services:
   - type: web
@@ -25,8 +19,6 @@ services:
     healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: portfolio-db
-          property: connectionString
+        sync: false # paste your PostgreSQL "External Database URL" when prompted
       - key: JWT_SECRET
         generateValue: true
