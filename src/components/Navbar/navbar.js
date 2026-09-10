@@ -19,9 +19,9 @@ const Navbar = () => {
     { to: '/', label: 'Home' },
     { to: '/about', label: 'About' },
     { to: '/experience', label: 'Experience' },
-    { to: '/portfolio', label: 'Portfolio' },
-    { to: '/blog', label: 'Blog' },
-    { to: '/cv', label: 'Resume' },
+    { to: '/portfolio', label: 'Projects' },
+    { to: '/cv', label: 'CV' },
+    { to: '/contact', label: 'Contact' },
   ];
 
   return (

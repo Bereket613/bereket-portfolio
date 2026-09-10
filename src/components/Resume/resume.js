@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api';
+import { experienceData as fallbackExperience, projectsData as fallbackProjects } from '../../data/portfolioData';
 
 const ResumePage = () => {
     const [profile, setProfile] = useState({});
-    const [experiences, setExperiences] = useState([]);
-    const [projects, setProjects] = useState([]);
+    const [experiences, setExperiences] = useState(fallbackExperience);
+    const [projects, setProjects] = useState(fallbackProjects.slice(0, 5));
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -15,9 +16,9 @@ const ResumePage = () => {
                     api.get('/api/experiences'),
                     api.get('/api/projects')
                 ]);
-                setProfile(profRes.data || {});
-                setExperiences(expRes.data || []);
-                setProjects(projRes.data ? projRes.data.slice(0, 4) : []); // limit to 4 for resume layout
+                if (profRes.data && Object.keys(profRes.data).length > 0) setProfile(profRes.data);
+                if (expRes.data && expRes.data.length > 0) setExperiences(expRes.data);
+                if (projRes.data && projRes.data.length > 0) setProjects(projRes.data.slice(0, 5));
             } catch (err) {
                 console.error("Resume load error:", err);
             }
@@ -40,13 +41,13 @@ const ResumePage = () => {
                 
                 {/* Controls - Hidden during print */}
                 <div className="flex flex-wrap justify-between items-center gap-4 mb-8 print:hidden">
-                    <h1 className="text-3xl font-bold dark:text-white">Resume / CV</h1>
+                    <h1 className="text-3xl font-bold dark:text-white">Curriculum Vitae</h1>
                     <div className="flex flex-wrap gap-3">
                         <button onClick={handlePrint} className="bg-white dark:bg-slate-800 border-2 border-accent text-accent px-6 py-2 rounded-full font-medium hover:bg-accent hover:text-white transition-all duration-300 flex items-center gap-2">
-                            <i className="fas fa-eye"></i> View Resume
+                            <i className="fas fa-eye"></i> View CV
                         </button>
-                        <a href={resumePdfUrl} download="Bereket-Getaw-Resume.pdf" className="bg-accent text-white px-6 py-2 rounded-full font-medium shadow-[0_10px_20px_rgba(79,70,229,0.3)] hover:-translate-y-1 hover:shadow-[0_15px_25px_rgba(79,70,229,0.4)] transition-all duration-300 flex items-center gap-2">
-                            <i className="fas fa-download"></i> Download Resume (PDF)
+                        <a href={resumePdfUrl} download="Bereket-Getaw-CV.pdf" className="bg-accent text-white px-6 py-2 rounded-full font-medium shadow-[0_10px_20px_rgba(15,118,110,0.25)] hover:-translate-y-1 transition-all duration-300 flex items-center gap-2">
+                            <i className="fas fa-download"></i> Download CV
                         </a>
                     </div>
                 </div>
@@ -61,7 +62,7 @@ const ResumePage = () => {
                         )}
                         <div className="flex-1 text-center sm:text-left">
                             <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">{profile.name || 'Bereket Getaw'}</h1>
-                            <p className="text-xl text-accent font-semibold mt-1">{profile.title || 'Data Scientist & AI Engineer'}</p>
+                            <p className="text-xl text-accent font-semibold mt-1">{profile.title || 'AI / Machine Learning Engineer'}</p>
                             
                             <div className="flex flex-wrap justify-center sm:justify-start gap-x-5 gap-y-2 mt-4 text-sm font-medium text-slate-600">
                                 {profile.email && <span className="flex items-center gap-1.5"><i className="fas fa-envelope text-accent"></i> {profile.email}</span>}
@@ -133,9 +134,27 @@ const ResumePage = () => {
                             <section>
                                 <h2 className="text-xl font-bold text-slate-900 mb-4 pb-1 border-b border-slate-200">Education</h2>
                                 <div>
-                                    <h3 className="font-bold text-slate-900 text-sm">BSc. Information Systems</h3>
+                                    <h3 className="font-bold text-slate-900 text-sm">BSc — Data Science</h3>
                                     <p className="text-sm text-slate-600 mt-0.5">Debre Berhan University</p>
-                                    <p className="text-xs text-slate-500 mt-1">2021 - 2025</p>
+                                </div>
+                            </section>
+
+                            <section>
+                                <h2 className="text-xl font-bold text-slate-900 mb-4 pb-1 border-b border-slate-200">Technical Skills</h2>
+                                <div className="space-y-2.5 text-xs">
+                                    <div><span className="font-semibold text-slate-900">Machine Learning:</span> <span className="text-slate-600">Supervised/Unsupervised Learning, Classification, Regression, Anomaly Detection, Model Evaluation</span></div>
+                                    <div><span className="font-semibold text-slate-900">Deep Learning:</span> <span className="text-slate-600">Neural Networks, PyTorch, TensorFlow, Representation Learning</span></div>
+                                    <div><span className="font-semibold text-slate-900">NLP:</span> <span className="text-slate-600">Transformers, LLMs, RAG, Multilingual &amp; Amharic NLP</span></div>
+                                    <div><span className="font-semibold text-slate-900">Computer Vision:</span> <span className="text-slate-600">Image Classification, Object Detection, Pose Estimation, Image Processing</span></div>
+                                    <div><span className="font-semibold text-slate-900">Big Data &amp; Tools:</span> <span className="text-slate-600">Apache Spark, PySpark, Python, R, SQL, Git, GitHub</span></div>
+                                </div>
+                            </section>
+
+                            <section>
+                                <h2 className="text-xl font-bold text-slate-900 mb-4 pb-1 border-b border-slate-200">Contact</h2>
+                                <div className="text-xs text-slate-600 space-y-1.5">
+                                    <p><span className="font-semibold text-slate-900">GitHub:</span> github.com/Bereket613</p>
+                                    <p><span className="font-semibold text-slate-900">Location:</span> Addis Ababa, Ethiopia</p>
                                 </div>
                             </section>
                             

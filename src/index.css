@@ -14,6 +14,9 @@
     @apply bg-slate-50 text-slate-900 transition-colors duration-300;
   }
 
+  /* Consistent typographic hierarchy */
+  h1, h2, h3, h4 { @apply tracking-tight; }
+
   .dark body {
     @apply text-slate-100;
     @apply bg-slate-950;

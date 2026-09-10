@@ -10,26 +10,35 @@ const About = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">About Me</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">About</h1>
 
           <div className="mt-6 space-y-5 text-lg leading-relaxed text-slate-600 dark:text-slate-300">
             <p>
-              Hello! I'm <strong className="text-slate-900 dark:text-white">Bereket Getaw Haile</strong>, a web
-              developer and data science student at{' '}
-              <strong className="text-slate-900 dark:text-white">Debre Berhan University</strong>, Ethiopia. I'm
-              building a solid foundation in software development and artificial intelligence.
+              I'm <strong className="text-slate-900 dark:text-white">Bereket Getaw</strong>, an AI/ML
+              engineer. I build practical AI systems across machine learning, deep learning, NLP,
+              computer vision, and big data — from data processing and model training through to
+              usable applications.
             </p>
             <p>
-              What draws me to data science is turning raw data into useful answers — finding patterns,
-              solving concrete problems, and building models that make reasonable predictions. I believe
-              data, used carefully, can improve decisions and drive real-world impact.
+              My work spans several areas: supervised and unsupervised learning, transformer-based NLP,
+              RAG systems and agentic AI, and computer vision tasks like classification, detection, and
+              pose estimation. I also care about{' '}
+              <strong className="text-slate-900 dark:text-white">privacy-preserving machine learning</strong> —
+              building systems that can learn from sensitive data without exposing it.
             </p>
             <p>
-              Lately I've been working with{' '}
-              <strong className="text-slate-900 dark:text-white">Python, Pandas, NumPy, Matplotlib, Seaborn,
-              Scikit-learn</strong> and beginner-level <strong className="text-slate-900 dark:text-white">TensorFlow</strong>.
-              My hands-on projects include recommendation systems, classification models, and visual
-              dashboards for communicating results.
+              A recurring focus of mine is{' '}
+              <strong className="text-slate-900 dark:text-white">Ethiopian language AI</strong> — projects
+              like Amharic sign language detection, Amharic fake news detection, encrypted Amharic
+              sentiment analysis, and multilingual RAG chatbots. Low-resource languages are underserved
+              by modern NLP, and I want to help close that gap.
+            </p>
+            <p>
+              I studied at Debre Berhan University, where I co-founded{' '}
+              <strong className="text-slate-900 dark:text-white">DataParse Club</strong>, a student data
+              and AI community, and completed a 3-month internship at{' '}
+              <strong className="text-slate-900 dark:text-white">INSA</strong> (Information Network
+              Security Agency) working on machine learning and privacy-preserving AI.
             </p>
           </div>
         </motion.div>
@@ -46,32 +55,20 @@ const About = () => {
         >
           {[
             {
-              title: "What I'm working towards",
-              content: <p className="text-slate-600 dark:text-slate-400 leading-relaxed">Bridging data science and web development — building tools that put machine learning in front of real users, and continuing towards a career as a data scientist and AI developer.</p>
+              title: "What I build",
+              content: <p className="text-slate-600 dark:text-slate-400 leading-relaxed">Applied ML systems: RAG chatbots, fraud and risk classification models, computer vision pipelines for agriculture and infrastructure, and NLP for Amharic.</p>
             },
             {
-              title: "Skills & tools",
-              content: (
-                <ul className="space-y-1.5 list-none text-slate-600 dark:text-slate-400">
-                  <li><strong className="text-slate-900 dark:text-white font-medium">Programming:</strong> Python, JavaScript, React, SQL</li>
-                  <li><strong className="text-slate-900 dark:text-white font-medium">Data analysis:</strong> Pandas, NumPy, visualization</li>
-                  <li><strong className="text-slate-900 dark:text-white font-medium">Machine learning:</strong> Scikit-learn, TensorFlow</li>
-                </ul>
-              )
+              title: "Problems I like",
+              content: <p className="text-slate-600 dark:text-slate-400 leading-relaxed">Ambiguous, real-world problems where the data is messy and the solution has to actually work — not just score well in a notebook.</p>
             },
             {
-              title: "Projects I'm proud of",
-              content: (
-                <ul className="space-y-1.5 list-none text-slate-600 dark:text-slate-400">
-                  <li>Book Recommendation System</li>
-                  <li>Image Classifier using CNN</li>
-                  <li>Stock Price Trend Visualizer</li>
-                </ul>
-              )
+              title: "Direction",
+              content: <p className="text-slate-600 dark:text-slate-400 leading-relaxed">Going deeper into large language models, agentic AI systems, and privacy-preserving machine learning for sensitive domains.</p>
             },
             {
-              title: "Education & location",
-              content: <p className="text-slate-600 dark:text-slate-400 leading-relaxed">BSc in Information Systems (in progress), Debre Berhan University. Based in Addis Ababa, Ethiopia.</p>
+              title: "Beyond engineering",
+              content: <p className="text-slate-600 dark:text-slate-400 leading-relaxed">Community building through DataParse Club — organizing, sharing knowledge, and helping other students get into data and AI.</p>
             }
           ].map((item, index) => (
             <motion.div

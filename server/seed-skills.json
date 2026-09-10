@@ -1,0 +1,75 @@
+[
+  {
+    "category": "Machine Learning",
+    "description": "Core machine learning methods, from classic supervised models to evaluation practice.",
+    "skills": [
+      "Machine Learning",
+      "Supervised Learning",
+      "Unsupervised Learning",
+      "Classification",
+      "Regression",
+      "Anomaly Detection",
+      "Model Evaluation"
+    ]
+  },
+  {
+    "category": "Deep Learning",
+    "description": "Neural network modeling and training for vision and representation learning.",
+    "skills": [
+      "Deep Learning",
+      "Neural Networks",
+      "PyTorch",
+      "TensorFlow",
+      "Computer Vision",
+      "Representation Learning"
+    ]
+  },
+  {
+    "category": "NLP",
+    "description": "Language technology, with a focus on Amharic and other low-resource languages.",
+    "skills": [
+      "Natural Language Processing",
+      "Transformers",
+      "Large Language Models",
+      "RAG",
+      "Multilingual NLP",
+      "Amharic NLP"
+    ]
+  },
+  {
+    "category": "Computer Vision",
+    "description": "Image understanding tasks from classification to pose estimation.",
+    "skills": [
+      "Computer Vision",
+      "Image Classification",
+      "Object Detection",
+      "Pose Estimation",
+      "Image Processing"
+    ]
+  },
+  {
+    "category": "Big Data",
+    "description": "Large-scale data processing and pipeline work.",
+    "skills": [
+      "Big Data",
+      "Apache Spark",
+      "PySpark",
+      "Data Processing",
+      "Streaming / Data Pipelines"
+    ]
+  },
+  {
+    "category": "Programming & Tools",
+    "description": "Languages and tooling used day to day.",
+    "skills": [
+      "Python",
+      "R",
+      "SQL",
+      "PySpark",
+      "PyTorch",
+      "TensorFlow",
+      "Git",
+      "GitHub"
+    ]
+  }
+]

@@ -59,6 +59,15 @@ CREATE TABLE IF NOT EXISTS profile (
     resume_url VARCHAR(255)
 );
 
+CREATE TABLE IF NOT EXISTS skills (
+    id SERIAL PRIMARY KEY,
+    category VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description VARCHAR(500),
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Lightweight anonymous visit tracking for analytics
 CREATE TABLE IF NOT EXISTS visits (
     id SERIAL PRIMARY KEY,

@@ -66,7 +66,7 @@ const ManageProfile = () => {
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Job Title</label>
-                            <input type="text" value={profile.title || ''} onChange={e => setProfile({...profile, title: e.target.value})} className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-accent outline-none" placeholder="AI Engineer / Data Scientist" />
+                            <input type="text" value={profile.title || ''} onChange={e => setProfile({...profile, title: e.target.value})} className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-accent outline-none" placeholder="AI / Machine Learning Engineer" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>

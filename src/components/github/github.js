@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
+const CACHE_KEY = 'github-repos-cache';
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
 const GithubStats = () => {
     const [repos, setRepos] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -12,11 +15,26 @@ const GithubStats = () => {
         setStarted(true);
         setLoading(true);
         setError(null);
+
+        // Serve from cache when fresh to avoid unnecessary API requests
+        try {
+            const cached = JSON.parse(sessionStorage.getItem(CACHE_KEY));
+            if (cached && Date.now() - cached.time < CACHE_TTL && Array.isArray(cached.repos)) {
+                setRepos(cached.repos);
+                setLoading(false);
+                return;
+            }
+        } catch { /* ignore malformed cache */ }
+
         try {
             const res = await fetch('https://api.github.com/users/Bereket613/repos?sort=updated&per_page=30');
+            if (res.status === 403 || res.status === 429) {
+                throw new Error('GitHub API rate limit reached. Try again in a few minutes.');
+            }
             if (!res.ok) throw new Error(`GitHub API returned ${res.status}`);
             const data = await res.json();
             setRepos(data);
+            sessionStorage.setItem(CACHE_KEY, JSON.stringify({ time: Date.now(), repos: data }));
         } catch (err) {
             console.error("GitHub fetch error:", err);
             setError(err.message);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from '../../api';
+import { projectsData, projectCategories } from '../../data/portfolioData';
 
 const Work = () => {
     const [projects, setProjects] = useState([]);
@@ -13,11 +14,17 @@ const Work = () => {
         const fetchProjects = async () => {
             try {
                 const response = await api.get('/api/projects');
-                setProjects(response.data);
+                // Use backend data when available; otherwise fall back to the static project list
+                if (response.data && response.data.length > 0) {
+                    setProjects(response.data);
+                } else {
+                    setProjects(projectsData);
+                }
                 setLoading(false);
             } catch (err) {
                 console.error("Error fetching projects:", err);
                 setError(err.message);
+                setProjects(projectsData);
                 setLoading(false);
             }
         };
@@ -25,7 +32,9 @@ const Work = () => {
         fetchProjects();
     }, []);
 
-    const categories = ['All', ...new Set(projects.map(p => p.category).filter(Boolean))];
+    const categories = projectCategories.length > 1
+        ? projectCategories
+        : ['All', ...new Set(projects.map(p => p.category).filter(Boolean))];
 
     const filteredProjects = projects.filter(project =>
         activeFilter === 'All' || project.category === activeFilter
@@ -51,9 +60,10 @@ const Work = () => {
                         <div className="animate-spin rounded-full h-10 w-10 border-2 border-slate-300 border-t-accent"></div>
                     </div>
                 ) : error ? (
-                    <div className="mt-10 text-center text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-200 dark:border-red-900">
-                        Unable to load projects. Please try again later.
-                    </div>
+                    <p className="mt-8 text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900 rounded-lg p-3 inline-flex items-center gap-2">
+                        <i className="fas fa-triangle-exclamation"></i>
+                        Live project data is unavailable — showing the static project list.
+                    </p>
                 ) : (
                     <>
                         {categories.length > 2 && (
@@ -81,20 +91,16 @@ const Work = () => {
                                     key={project.id || project.title}
                                     className="bg-white dark:bg-slate-900 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 hover:border-accent/50 dark:hover:border-teal-400/50 hover:shadow-md transition-all duration-200 flex flex-col group"
                                 >
-                                    <div className="h-44 overflow-hidden bg-slate-100 dark:bg-slate-800">
-                                        {project.image_url ? (
+                                    {project.image_url && (
+                                        <div className="h-40 overflow-hidden bg-slate-100 dark:bg-slate-800">
                                             <img
                                                 src={project.image_url}
                                                 alt={`${project.title} screenshot`}
                                                 loading="lazy"
                                                 className="w-full h-full object-cover"
                                             />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-slate-300 dark:text-slate-600">
-                                                <i className="fas fa-image text-3xl"></i>
-                                            </div>
-                                        )}
-                                    </div>
+                                        </div>
+                                    )}
 
                                     <div className="p-5 flex-grow flex flex-col">
                                         <div className="flex justify-between items-start gap-2 mb-2">
@@ -113,42 +119,46 @@ const Work = () => {
                                         {Array.isArray(project.tech_stack) && project.tech_stack.length > 0 && (
                                             <div className="flex flex-wrap gap-1.5 mb-4">
                                                 {project.tech_stack.map((tech, idx) => (
-                                                    <span key={idx} className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded">
+                                                    <span key={idx} className="font-mono text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded">
                                                         {tech}
                                                     </span>
                                                 ))}
                                             </div>
                                         )}
 
-                                        <div className="flex gap-2 mt-auto pt-2 border-t border-slate-100 dark:border-slate-800">
-                                            <button
-                                                onClick={() => setSelectedProject(project)}
-                                                className="flex-1 flex items-center justify-center gap-2 text-sm border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-accent hover:text-accent dark:hover:border-teal-400 dark:hover:text-teal-400 py-2 rounded-md font-medium transition-colors"
-                                            >
-                                                Details
-                                            </button>
-                                            {project.live_demo_url && (
-                                                <a
-                                                    href={project.live_demo_url}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex-1 flex items-center justify-center gap-2 text-sm bg-accent hover:bg-accentDark text-white py-2 rounded-md font-medium transition-colors"
-                                                >
-                                                    <i className="fas fa-external-link-alt text-xs"></i> Live Demo
-                                                </a>
-                                            )}
-                                            {project.github_url && (
-                                                <a
-                                                    href={project.github_url}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    aria-label={`${project.title} source code on GitHub`}
-                                                    className="flex items-center justify-center text-sm border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-accent hover:text-accent dark:hover:border-teal-400 dark:hover:text-teal-400 py-2 px-3.5 rounded-md font-medium transition-colors"
-                                                >
-                                                    <i className="fab fa-github"></i>
-                                                </a>
-                                            )}
-                                        </div>
+                                        {(project.github_url || project.live_demo_url || project.description) && (
+                                            <div className="flex gap-2 mt-auto pt-2 border-t border-slate-100 dark:border-slate-800">
+                                                {project.description && project.description.length > 120 && (
+                                                    <button
+                                                        onClick={() => setSelectedProject(project)}
+                                                        className="flex-1 flex items-center justify-center gap-2 text-sm border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-accent hover:text-accent dark:hover:border-teal-400 dark:hover:text-teal-400 py-2 rounded-md font-medium transition-colors"
+                                                    >
+                                                        Details
+                                                    </button>
+                                                )}
+                                                {project.live_demo_url && (
+                                                    <a
+                                                        href={project.live_demo_url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex-1 flex items-center justify-center gap-2 text-sm bg-accent hover:bg-accentDark text-white py-2 rounded-md font-medium transition-colors"
+                                                    >
+                                                        <i className="fas fa-external-link-alt text-xs"></i> Live Demo
+                                                    </a>
+                                                )}
+                                                {project.github_url && (
+                                                    <a
+                                                        href={project.github_url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        aria-label={`${project.title} source code on GitHub`}
+                                                        className="flex items-center justify-center text-sm border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-accent hover:text-accent dark:hover:border-teal-400 dark:hover:text-teal-400 py-2 px-3.5 rounded-md font-medium transition-colors"
+                                                    >
+                                                        <i className="fab fa-github"></i>
+                                                    </a>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             ))}

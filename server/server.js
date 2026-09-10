@@ -438,6 +438,57 @@ app.get('/api/analytics', authenticateToken, async (req, res) => {
     }
 });
 
+// --- SKILLS ENDPOINTS ---
+app.get('/api/skills', async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM skills ORDER BY sort_order, id');
+        res.json(result.rows);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.post('/api/skills', authenticateToken, async (req, res) => {
+    try {
+        const { category, name, description } = req.body;
+        if (!category || !name) return res.status(400).json({ message: 'Category and name are required' });
+        const result = await db.query(
+            'INSERT INTO skills (category, name, description) VALUES ($1, $2, $3) RETURNING *',
+            [category, name, description || null]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.put('/api/skills/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { category, name, description } = req.body;
+        if (!category || !name) return res.status(400).json({ message: 'Category and name are required' });
+        const result = await db.query(
+            'UPDATE skills SET category=$1, name=$2, description=$3 WHERE id=$4 RETURNING *',
+            [category, name, description || null, id]
+        );
+        if (result.rows.length === 0) return res.status(404).json({ message: 'Skill not found' });
+        res.json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.delete('/api/skills/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await db.query('DELETE FROM skills WHERE id = $1 RETURNING *', [id]);
+        if (result.rows.length === 0) return res.status(404).json({ message: 'Skill not found' });
+        res.json({ message: 'Skill deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });

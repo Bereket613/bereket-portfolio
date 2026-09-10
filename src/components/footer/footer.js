@@ -9,7 +9,7 @@ const Footer = () => {
                     <div>
                         <h3 className="text-xl font-bold mb-3">Bereket Getaw</h3>
                         <p className="text-gray-400 text-sm leading-relaxed">
-                            Data Scientist & AI Developer based in Addis Ababa, Ethiopia. Building intelligent systems and data-driven solutions.
+                            AI/ML engineer based in Addis Ababa, Ethiopia. Working on machine learning, NLP, computer vision, and big data systems.
                         </p>
                     </div>
                     <div>
@@ -18,7 +18,8 @@ const Footer = () => {
                             <li><Link to="/" className="hover:text-accent transition-colors">Home</Link></li>
                             <li><Link to="/about" className="hover:text-accent transition-colors">About</Link></li>
                             <li><Link to="/experience" className="hover:text-accent transition-colors">Experience</Link></li>
-                            <li><Link to="/portfolio" className="hover:text-accent transition-colors">Portfolio</Link></li>
+                            <li><Link to="/portfolio" className="hover:text-accent transition-colors">Projects</Link></li>
+                            <li><Link to="/blog" className="hover:text-accent transition-colors">Blog</Link></li>
                         </ul>
                     </div>
                     <div>

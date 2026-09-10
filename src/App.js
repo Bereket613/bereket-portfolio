@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, lazy, Suspense } from 'react';
+import React, { useContext, useEffect, lazy, Suspense } from 'react';
 import "@fortawesome/fontawesome-free/css/all.min.css";
 // HashRouter so deep links (e.g. /about) work on GitHub Pages without server rewrites
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
@@ -10,7 +10,6 @@ import Intro from './components/Intro/intro';
 import Skills from './components/skills/skill';
 import Works from './components/work/work';
 import Footer from './components/footer/footer';
-import Contact from './components/contact/contact';
 import GithubStats from './components/github/github';
 
 // Lazy-loaded route components (code splitting)
@@ -18,6 +17,7 @@ const About = lazy(() => import('./components/about/about'));
 const Experience = lazy(() => import('./components/experience/experience'));
 const Blog = lazy(() => import('./components/blog/blog'));
 const ResumePage = lazy(() => import('./components/Resume/resume'));
+const Contact = lazy(() => import('./components/contact/contact'));
 const Terms = lazy(() => import('./components/terms/terms'));
 const Privacy = lazy(() => import('./components/privacy/privacy'));
 const Chatbot = lazy(() => import('./components/chatbot/chatbot'));
@@ -92,21 +92,27 @@ function CVPage() {
   );
 }
 
-// Home Page
-function HomePage() {
-  const [showContact, setShowContact] = useState(false);
-
+// Contact Page
+function ContactPage() {
   return (
     <>
       <Navbar />
-      <Intro onContactClick={() => setShowContact(true)} />
+      {renderLazy(Contact)}
+      <Footer />
+    </>
+  );
+}
+
+// Home Page
+function HomePage() {
+  return (
+    <>
+      <Navbar />
+      <Intro />
       <Skills />
       <Works />
       <GithubStats />
       <Footer />
-      {showContact && (
-        <Contact onClose={() => setShowContact(false)} />
-      )}
     </>
   );
 }
@@ -139,6 +145,7 @@ function ThemedApp() {
         <Route path="/portfolio" element={<PortfolioPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/cv" element={<CVPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="/terms" element={renderLazy(Terms)} />
         <Route path="/privacy" element={renderLazy(Privacy)} />
         {/* Admin Routes */}
