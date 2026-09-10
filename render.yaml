@@ -1,18 +1,32 @@
-# Render Blueprint - deploys the portfolio backend API as a web service.
-# In the Render dashboard: New + -> Blueprint -> select this repository.
+# Render Blueprint — deploys the complete backend stack in one click:
+#   1. PostgreSQL database (auto-created, connection string auto-wired)
+#   2. Express API web service (auto-deploys from the main branch)
+#
+# Apply it at: https://render.com/deploy?repo=https://github.com/Bereket613/bereket-portfolio
+#
+# No environment variables need to be entered manually:
+#   DATABASE_URL  -> wired to the database below automatically
+#   JWT_SECRET    -> generated automatically
+
+databases:
+  - name: portfolio-db
+    databaseName: portfolio
+    plan: free
+
 services:
   - type: web
     name: bereket-portfolio-api
     runtime: node
     rootDir: server
     plan: free
+    branch: main
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
-        sync: false # set this to your Supabase/Neon PostgreSQL connection string
+        fromDatabase:
+          name: portfolio-db
+          property: connectionString
       - key: JWT_SECRET
-        generateValue: true # long random secret, stored server-side only
-      - key: CORS_ORIGIN
-        sync: false # e.g. https://bereket613.github.io (already whitelisted by default)
+        generateValue: true
