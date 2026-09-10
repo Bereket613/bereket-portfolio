@@ -1,0 +1,26 @@
+# Keeps the free-tier Render backend awake by pinging /health every 10 minutes.
+# Render free instances spin down after ~15 min without traffic; this prevents
+# the ~50s cold start on the first visitor request.
+# Runs on GitHub's infrastructure — no local machine required.
+
+name: Keep backend awake
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch: {} # also runnable manually
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend health endpoint
+        run: |
+          for i in 1 2 3; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 "${{ vars.BACKEND_URL }}/health")
+            echo "attempt $i -> HTTP $code"
+            if [ "$code" = "200" ]; then exit 0; fi
+            sleep 10
+          done
+          echo "Backend did not return 200 — check the Render dashboard."
+          # Don't fail the workflow: failing just sends noise; check Render directly.
