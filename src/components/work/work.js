@@ -51,7 +51,7 @@ const Work = () => {
                 >
                     <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Projects</h2>
                     <p className="mt-2 text-slate-600 dark:text-slate-400 max-w-2xl">
-                        Data science, machine learning, and web development projects I have built.
+                        Machine learning, NLP, computer vision, and data projects I have built.
                     </p>
                 </motion.div>
 
@@ -59,13 +59,14 @@ const Work = () => {
                     <div className="flex justify-center items-center h-48">
                         <div className="animate-spin rounded-full h-10 w-10 border-2 border-slate-300 border-t-accent"></div>
                     </div>
-                ) : error ? (
-                    <p className="mt-8 text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900 rounded-lg p-3 inline-flex items-center gap-2">
-                        <i className="fas fa-triangle-exclamation"></i>
-                        Live project data is unavailable — showing the static project list.
-                    </p>
                 ) : (
                     <>
+                        {error && (
+                            <p className="mt-8 text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900 rounded-lg p-3 inline-flex items-center gap-2">
+                                <i className="fas fa-triangle-exclamation"></i>
+                                Live project data is unavailable — showing the static project list.
+                            </p>
+                        )}
                         {categories.length > 2 && (
                             <div className="flex flex-wrap gap-2 mt-8" role="group" aria-label="Filter projects by category">
                                 {categories.map(category => (
