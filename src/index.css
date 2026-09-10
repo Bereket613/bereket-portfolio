@@ -15,13 +15,23 @@
   }
 
   .dark body {
-    @apply text-slate-50;
-    background: radial-gradient(circle at top left, #312e81, #1e1b4b 40%, #020617 100%);
-    background-attachment: fixed;
+    @apply text-slate-100;
+    @apply bg-slate-950;
+  }
+
+  /* Visible focus states for keyboard navigation */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid theme('colors.accent');
+    outline-offset: 2px;
+    border-radius: 2px;
   }
 }
 
-/* Custom Premium Scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -29,17 +39,23 @@
   @apply bg-slate-100 dark:bg-slate-900;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-gradient-to-b from-accent to-accentDark rounded-full border-2 border-slate-100 dark:border-slate-900;
+  @apply bg-slate-300 dark:bg-slate-700 rounded-full;
 }
 ::-webkit-scrollbar-thumb:hover {
-  @apply from-accentDark to-accent;
-}
-
-/* Glassmorphism utility */
-.glass {
-  @apply bg-white/10 dark:bg-slate-900/40 backdrop-blur-lg border border-white/20 dark:border-slate-700/50 shadow-xl;
+  @apply bg-slate-400 dark:bg-slate-600;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

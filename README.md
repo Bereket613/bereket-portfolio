@@ -1,74 +1,78 @@
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-=======
 # bereket-portfolio
 
-This is my React-based portfolio website hosted on GitHub Pages 80b7bf0b400447617eebe29716e50f9810e71fa0
+My personal portfolio website, built with React (Create React App) and Tailwind CSS, hosted on GitHub Pages: [Bereket613.github.io/bereket-portfolio](https://Bereket613.github.io/bereket-portfolio)
+
+## Features
+
+- **Portfolio & GitHub projects** — dynamically fetched from the GitHub API
+- **Skills, experience, blog, and CV pages**
+- **Dark/light theme** toggle
+- **Contact form** — saves messages to the backend API and sends email notifications via EmailJS
+- **Admin dashboard** — manage projects, experiences, blog posts, and messages (JWT-authenticated)
+- **Chatbot** widget
+
+## Project structure
+
+- `src/` — React frontend
+- `server/` — Express + PostgreSQL backend (admin auth, messages, portfolio data)
+
+## Getting started
+
+```bash
+# Frontend
+npm install
+npm start
+
+# Backend (separate terminal)
+cd server
+npm install
+npm start
+```
+
+### Environment variables
+
+Copy `.env.example` to `.env` and fill in your values:
+
+- `REACT_APP_EMAILJS_SERVICE_ID` / `REACT_APP_EMAILJS_TEMPLATE_ID` / `REACT_APP_EMAILJS_PUBLIC_KEY` — EmailJS credentials for the contact form
+- `REACT_APP_API_URL` — backend API URL (defaults to `http://127.0.0.1:5000`)
+
+The backend has its own `.env.example` under `server/`.
+
+## Available scripts (frontend)
+
+- `npm start` — run the dev server at [http://localhost:3000](http://localhost:3000)
+- `npm run build` — build for production to the `build` folder
+- `npm test` — run tests
+- `npm run deploy` — deploy to GitHub Pages (runs the build first via `predeploy`)
+
+## Deployment
+
+### Frontend
+
+**GitHub Pages (current setup):**
+1. Set `homepage` in `package.json` to `https://<user>.github.io/<repo>`.
+2. Run `npm run deploy` (builds and publishes the `build` folder to the `gh-pages` branch).
+
+**Vercel:**
+1. Import the repo into Vercel.
+2. Framework preset: Create React App (auto-detected). Build command `npm run build`, output `build`.
+3. Add the `REACT_APP_*` environment variables in Project Settings.
+4. If deploying under a custom domain (not a subpath), remove/adjust `basename` in `src/App.js`.
+
+### Backend (Render or Railway)
+
+1. Create a new Web Service pointing at the repo root with:
+   - Root directory: `server`
+   - Build command: `npm install`
+   - Start command: `npm start`
+2. Set environment variables: `DATABASE_URL`, `JWT_SECRET` (required in production), `PORT` (Render provides it).
+3. Add your frontend origin (e.g. `https://<user>.github.io`) to the CORS whitelist in `server/server.js` if different from the defaults.
+4. Uploaded images/CVs are stored on the server disk under `server/uploads`. For multi-instance deployments prefer object storage (S3/Cloudinary) instead.
+
+### Database (Supabase or Neon)
+
+1. Create a PostgreSQL instance (Supabase / Neon) and copy the connection string.
+2. Set it as `DATABASE_URL` on the backend service. SSL is enabled automatically for non-localhost connections (see `server/db.js`).
+3. The schema (`server/schema.sql`) is applied automatically on server startup — including the `visits` analytics table and the `logo_url`/`location`/`resume_url` columns.
+4. Create the first admin once via `POST /api/admin/setup` with `{ "username": "...", "password": "..." }` (endpoint locks itself after the first admin exists).
+

@@ -35,6 +35,22 @@ const ManageProfile = () => {
         }
     };
 
+    const handleResumeUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+            const res = await api.post('/api/upload/resume', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            setProfile(prev => ({ ...prev, resume_url: res.data.url }));
+            toast.success('Resume PDF uploaded');
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Resume upload failed');
+        }
+    };
+
     if (loading) return <div className="text-gray-500">Loading profile data...</div>;
 
     return (
@@ -72,6 +88,27 @@ const ManageProfile = () => {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">About / Bio</label>
                         <textarea rows="5" value={profile.about || ''} onChange={e => setProfile({...profile, about: e.target.value})} className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-accent outline-none" placeholder="Write a short professional summary..."></textarea>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
+                            <input type="text" value={profile.location || ''} onChange={e => setProfile({...profile, location: e.target.value})} className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-accent outline-none" placeholder="Addis Ababa, Ethiopia" />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Resume PDF</label>
+                            <div className="flex items-center gap-3">
+                                <label className="cursor-pointer flex-1 flex items-center justify-center gap-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg py-2 text-sm text-gray-500 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">
+                                    <i className="fas fa-file-pdf"></i> {profile.resume_url ? 'Replace CV file' : 'Upload new CV'}
+                                    <input type="file" accept="application/pdf" onChange={handleResumeUpload} className="hidden" />
+                                </label>
+                                {profile.resume_url && (
+                                    <a href={profile.resume_url} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline text-sm flex-shrink-0">
+                                        <i className="fas fa-external-link-alt mr-1"></i>Current
+                                    </a>
+                                )}
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">Max 10 MB — used by the "Download Resume" buttons</p>
+                        </div>
                     </div>
                     <button type="submit" className="bg-accent text-white px-6 py-2 rounded-lg hover:bg-accentDark transition mt-4 shadow-lg shadow-accent/30 font-medium">
                         Save CV Profile

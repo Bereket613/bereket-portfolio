@@ -30,18 +30,25 @@ const ResumePage = () => {
         window.print();
     };
 
-    if (loading) return <div className="min-h-screen pt-32 pb-20 flex justify-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-accent"></div></div>;
+    const resumePdfUrl = profile.resume_url || (process.env.PUBLIC_URL + '/resume.pdf');
+
+    if (loading) return <div className="min-h-screen pt-32 pb-20 flex justify-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div></div>;
 
     return (
         <div className="min-h-screen pt-24 pb-20 bg-slate-50 dark:bg-slate-900 print:bg-white print:pt-0 print:pb-0 font-sans transition-colors duration-300">
             <div className="max-w-4xl mx-auto px-4 print:px-0 print:max-w-none">
                 
                 {/* Controls - Hidden during print */}
-                <div className="flex justify-between items-center mb-8 print:hidden">
-                    <h1 className="text-3xl font-bold dark:text-white">Curriculum Vitae</h1>
-                    <button onClick={handlePrint} className="bg-accent text-white px-6 py-2 rounded-full font-medium shadow-[0_10px_20px_rgba(79,70,229,0.3)] hover:-translate-y-1 hover:shadow-[0_15px_25px_rgba(79,70,229,0.4)] transition-all duration-300 flex items-center gap-2">
-                        <i className="fas fa-download"></i> Download / Print PDF
-                    </button>
+                <div className="flex flex-wrap justify-between items-center gap-4 mb-8 print:hidden">
+                    <h1 className="text-3xl font-bold dark:text-white">Resume / CV</h1>
+                    <div className="flex flex-wrap gap-3">
+                        <button onClick={handlePrint} className="bg-white dark:bg-slate-800 border-2 border-accent text-accent px-6 py-2 rounded-full font-medium hover:bg-accent hover:text-white transition-all duration-300 flex items-center gap-2">
+                            <i className="fas fa-eye"></i> View Resume
+                        </button>
+                        <a href={resumePdfUrl} download="Bereket-Getaw-Resume.pdf" className="bg-accent text-white px-6 py-2 rounded-full font-medium shadow-[0_10px_20px_rgba(79,70,229,0.3)] hover:-translate-y-1 hover:shadow-[0_15px_25px_rgba(79,70,229,0.4)] transition-all duration-300 flex items-center gap-2">
+                            <i className="fas fa-download"></i> Download Resume (PDF)
+                        </a>
+                    </div>
                 </div>
 
                 {/* CV Document Body */}

@@ -1,0 +1,18 @@
+# Render Blueprint - deploys the portfolio backend API as a web service.
+# In the Render dashboard: New + -> Blueprint -> select this repository.
+services:
+  - type: web
+    name: bereket-portfolio-api
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false # set this to your Supabase/Neon PostgreSQL connection string
+      - key: JWT_SECRET
+        generateValue: true # long random secret, stored server-side only
+      - key: CORS_ORIGIN
+        sync: false # e.g. https://bereket613.github.io (already whitelisted by default)

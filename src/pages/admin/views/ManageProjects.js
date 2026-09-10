@@ -72,6 +72,22 @@ const ManageProjects = () => {
         }
     };
 
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+            const res = await api.post('/api/upload/image', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            setForm(prev => ({ ...prev, image_url: res.data.url }));
+            toast.success("Image uploaded");
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Image upload failed");
+        }
+    };
+
     return (
         <div>
             <div className="flex justify-between items-center mb-6">
@@ -152,6 +168,19 @@ const ManageProjects = () => {
                                     rows="3"
                                     className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-accent focus:border-transparent"
                                 ></textarea>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Project Image</label>
+                                <div className="flex items-center gap-4">
+                                    {form.image_url && (
+                                        <img src={form.image_url} alt="Preview" className="w-16 h-16 rounded-lg object-cover border border-gray-200 dark:border-gray-600" />
+                                    )}
+                                    <label className="cursor-pointer flex-1 flex items-center justify-center gap-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg py-3 text-sm text-gray-500 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">
+                                        <i className="fas fa-cloud-upload-alt"></i> Upload image
+                                        <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml" onChange={handleImageUpload} className="hidden" />
+                                    </label>
+                                </div>
+                                <p className="text-xs text-gray-400 mt-1">Max 5 MB — jpeg, png, webp, gif, svg</p>
                             </div>
                             <div className="flex gap-4 pt-4">
                                 <Button type="submit" variant="primary" className="flex-1">Save</Button>

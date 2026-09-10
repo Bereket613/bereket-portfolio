@@ -7,11 +7,11 @@ const Work = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeFilter, setActiveFilter] = useState('All');
+    const [selectedProject, setSelectedProject] = useState(null);
 
     useEffect(() => {
         const fetchProjects = async () => {
             try {
-                // Now fetching plain flat records from the PostgreSQL API
                 const response = await api.get('/api/projects');
                 setProjects(response.data);
                 setLoading(false);
@@ -27,142 +27,229 @@ const Work = () => {
 
     const categories = ['All', ...new Set(projects.map(p => p.category).filter(Boolean))];
 
-    const filteredProjects = projects.filter(project => 
+    const filteredProjects = projects.filter(project =>
         activeFilter === 'All' || project.category === activeFilter
     );
 
     return (
-        <section id="portfolio" className="py-20 px-6 md:px-12 lg:px-24 bg-transparent min-h-screen relative z-10">
-            <div className="max-w-7xl mx-auto">
-                <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
+        <section id="portfolio" className="py-20 px-6 md:px-12">
+            <div className="max-w-6xl mx-auto">
+                <motion.div
+                    initial={{ opacity: 0, y: 12 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-center mb-16"
+                    transition={{ duration: 0.4 }}
                 >
-                    <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-accent to-accentDark mb-6">Featured My Portfolio</h2>
-                    <p className="max-w-2xl mx-auto text-lg text-gray-600 dark:text-gray-400">
-                        I specialize in artificial intelligence, machine learning, data visualization, and web development. Explore my recent work below.
+                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Projects</h2>
+                    <p className="mt-2 text-slate-600 dark:text-slate-400 max-w-2xl">
+                        Data science, machine learning, and web development projects I have built.
                     </p>
                 </motion.div>
 
                 {loading ? (
                     <div className="flex justify-center items-center h-48">
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
+                        <div className="animate-spin rounded-full h-10 w-10 border-2 border-slate-300 border-t-accent"></div>
                     </div>
                 ) : error ? (
-                    <div className="text-center text-red-500 bg-red-100 p-4 rounded-lg">
-                        Failed to load projects: {error}
+                    <div className="mt-10 text-center text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-200 dark:border-red-900">
+                        Unable to load projects. Please try again later.
                     </div>
                 ) : (
                     <>
-                        {/* Filters */}
-                        <div className="flex flex-wrap justify-center gap-4 mb-12">
-                            {categories.map(category => (
-                                <button 
-                                    key={category} 
-                                    className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
-                                        activeFilter === category 
-                                        ? 'bg-gradient-to-r from-accent to-accentDark text-white shadow-lg shadow-accent/20' 
-                                        : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 shadow-sm border border-slate-200 dark:border-slate-700 hover:border-accent dark:hover:border-accent hover:text-accent dark:hover:text-accent'
-                                    }`}
-                                    onClick={() => setActiveFilter(category)}
+                        {categories.length > 2 && (
+                            <div className="flex flex-wrap gap-2 mt-8" role="group" aria-label="Filter projects by category">
+                                {categories.map(category => (
+                                    <button
+                                        key={category}
+                                        aria-pressed={activeFilter === category}
+                                        className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                                            activeFilter === category
+                                                ? 'bg-accent text-white'
+                                                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:border-accent dark:hover:border-teal-400 hover:text-accent dark:hover:text-teal-400'
+                                        }`}
+                                        onClick={() => setActiveFilter(category)}
+                                    >
+                                        {category}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+                            {filteredProjects.map((project) => (
+                                <div
+                                    key={project.id || project.title}
+                                    className="bg-white dark:bg-slate-900 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 hover:border-accent/50 dark:hover:border-teal-400/50 hover:shadow-md transition-all duration-200 flex flex-col group"
                                 >
-                                    {category}
-                                </button>
+                                    <div className="h-44 overflow-hidden bg-slate-100 dark:bg-slate-800">
+                                        {project.image_url ? (
+                                            <img
+                                                src={project.image_url}
+                                                alt={`${project.title} screenshot`}
+                                                loading="lazy"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-slate-300 dark:text-slate-600">
+                                                <i className="fas fa-image text-3xl"></i>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="p-5 flex-grow flex flex-col">
+                                        <div className="flex justify-between items-start gap-2 mb-2">
+                                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{project.title}</h3>
+                                            {project.category && (
+                                                <span className="text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-full whitespace-nowrap mt-0.5 border border-slate-200 dark:border-slate-700">
+                                                    {project.category}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 flex-grow line-clamp-3">
+                                            {project.description}
+                                        </p>
+
+                                        {Array.isArray(project.tech_stack) && project.tech_stack.length > 0 && (
+                                            <div className="flex flex-wrap gap-1.5 mb-4">
+                                                {project.tech_stack.map((tech, idx) => (
+                                                    <span key={idx} className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded">
+                                                        {tech}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        <div className="flex gap-2 mt-auto pt-2 border-t border-slate-100 dark:border-slate-800">
+                                            <button
+                                                onClick={() => setSelectedProject(project)}
+                                                className="flex-1 flex items-center justify-center gap-2 text-sm border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-accent hover:text-accent dark:hover:border-teal-400 dark:hover:text-teal-400 py-2 rounded-md font-medium transition-colors"
+                                            >
+                                                Details
+                                            </button>
+                                            {project.live_demo_url && (
+                                                <a
+                                                    href={project.live_demo_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex-1 flex items-center justify-center gap-2 text-sm bg-accent hover:bg-accentDark text-white py-2 rounded-md font-medium transition-colors"
+                                                >
+                                                    <i className="fas fa-external-link-alt text-xs"></i> Live Demo
+                                                </a>
+                                            )}
+                                            {project.github_url && (
+                                                <a
+                                                    href={project.github_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    aria-label={`${project.title} source code on GitHub`}
+                                                    className="flex items-center justify-center text-sm border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-accent hover:text-accent dark:hover:border-teal-400 dark:hover:text-teal-400 py-2 px-3.5 rounded-md font-medium transition-colors"
+                                                >
+                                                    <i className="fab fa-github"></i>
+                                                </a>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
                             ))}
                         </div>
 
-                        {/* Project Grid */}
-                        <motion.div 
-                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-                            layout
-                        >
-                            <AnimatePresence>
-                                {filteredProjects.map((project) => (
-                                    <motion.div 
-                                        key={project.id || project.title}
-                                        layout
-                                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                                        exit={{ opacity: 0, scale: 0.9, y: -20 }}
-                                        whileHover={{ y: -10, transition: { duration: 0.2 } }}
-                                        transition={{ duration: 0.4, ease: "easeOut" }}
-                                        className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-2xl rounded-2xl overflow-hidden border border-white/50 dark:border-white/10 hover:shadow-[0_20px_40px_rgba(79,70,229,0.25)] hover:border-accent/40 transition-all duration-500 flex flex-col h-full group relative"
-                                    >
-                                        <div className="h-48 overflow-hidden relative bg-gray-200 dark:bg-gray-800">
-                                            {project.image_url ? (
-                                                <img
-                                                    src={project.image_url}
-                                                    alt={project.title}
-                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                                    <i className="fas fa-image text-4xl"></i>
-                                                </div>
-                                            )}
-                                        </div>
-                                        
-                                        <div className="p-6 flex-grow flex flex-col relative z-10 bg-transparent">
-                                            <div className="flex justify-between items-start mb-4">
-                                                <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-accent transition-colors">{project.title}</h3>
-                                                <span className="text-xs font-semibold bg-accent/10 text-accent px-3 py-1 rounded-full whitespace-nowrap ml-2">
-                                                    {project.category}
-                                                </span>
-                                            </div>
-                                            
-                                            <p className="text-gray-600 dark:text-gray-400 mb-6 flex-grow line-clamp-3">
-                                                {project.description}
-                                            </p>
-
-                                            {/* Tech Stack */}
-                                            {project.tech_stack && Array.isArray(project.tech_stack) && project.tech_stack.length > 0 && (
-                                                <div className="flex flex-wrap gap-2 mb-6">
-                                                    {project.tech_stack.map((tech, idx) => (
-                                                        <span key={idx} className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-1 rounded">
-                                                            {tech}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            )}
-
-                                            <div className="flex gap-4 mt-auto pt-4 border-t border-gray-100 dark:border-gray-800">
-                                                {project.live_demo_url && (
-                                                    <a 
-                                                        href={project.live_demo_url} 
-                                                        target="_blank" 
-                                                        rel="noopener noreferrer"
-                                                        className="flex-1 flex items-center justify-center gap-2 bg-accent hover:bg-blue-600 text-white py-2 rounded-lg font-medium transition-colors"
-                                                    >
-                                                        <i className="fas fa-external-link-alt"></i> Live Demo
-                                                    </a>
-                                                )}
-                                                {project.github_url && (
-                                                    <a 
-                                                        href={project.github_url} 
-                                                        target="_blank" 
-                                                        rel="noopener noreferrer"
-                                                        className="flex-1 flex items-center justify-center gap-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white py-2 rounded-lg font-medium transition-colors"
-                                                    >
-                                                        <i className="fab fa-github"></i> GitHub
-                                                    </a>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </AnimatePresence>
-                        </motion.div>
-                        
                         {filteredProjects.length === 0 && (
-                            <div className="text-center text-gray-500 py-12">
-                                No projects found in this category.
+                            <div className="text-center text-slate-500 dark:text-slate-400 py-12">
+                                No projects in this category yet.
                             </div>
                         )}
                     </>
                 )}
             </div>
+
+            {/* Project Details Modal */}
+            <AnimatePresence>
+                {selectedProject && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                        className="fixed inset-0 bg-black/50 z-[1000] flex justify-center items-center p-4"
+                        onClick={() => setSelectedProject(null)}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label={`${selectedProject.title} details`}
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            transition={{ duration: 0.15 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-white dark:bg-slate-900 rounded-lg max-w-xl w-full shadow-xl border border-slate-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto"
+                        >
+                            {selectedProject.image_url && (
+                                <div className="h-52 bg-slate-100 dark:bg-slate-800">
+                                    <img src={selectedProject.image_url} alt={`${selectedProject.title} screenshot`} className="w-full h-full object-cover" />
+                                </div>
+                            )}
+
+                            <div className="p-6">
+                                <div className="flex justify-between items-start gap-4 mb-3">
+                                    <h3 className="text-xl font-semibold text-slate-900 dark:text-white">{selectedProject.title}</h3>
+                                    <button
+                                        onClick={() => setSelectedProject(null)}
+                                        className="w-8 h-8 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                                        aria-label="Close details"
+                                    >
+                                        <i className="fas fa-times"></i>
+                                    </button>
+                                </div>
+
+                                {selectedProject.category && (
+                                    <span className="text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-700">
+                                        {selectedProject.category}
+                                    </span>
+                                )}
+
+                                <p className="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed">
+                                    {selectedProject.description}
+                                </p>
+
+                                {Array.isArray(selectedProject.tech_stack) && selectedProject.tech_stack.length > 0 && (
+                                    <div className="flex flex-wrap gap-1.5 mt-4">
+                                        {selectedProject.tech_stack.map((tech, idx) => (
+                                            <span key={idx} className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-1 rounded">
+                                                {tech}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+
+                                <div className="flex flex-wrap gap-3 mt-6">
+                                    {selectedProject.live_demo_url && (
+                                        <a
+                                            href={selectedProject.live_demo_url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex-1 min-w-[120px] flex items-center justify-center gap-2 bg-accent hover:bg-accentDark text-white py-2.5 rounded-md font-medium transition-colors text-sm"
+                                        >
+                                            <i className="fas fa-external-link-alt text-xs"></i> Live Demo
+                                        </a>
+                                    )}
+                                    {selectedProject.github_url && (
+                                        <a
+                                            href={selectedProject.github_url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex-1 min-w-[120px] flex items-center justify-center gap-2 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-accent hover:text-accent dark:hover:border-teal-400 dark:hover:text-teal-400 py-2.5 rounded-md font-medium transition-colors text-sm"
+                                        >
+                                            <i className="fab fa-github"></i> View Source
+                                        </a>
+                                    )}
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </section>
     );
 };

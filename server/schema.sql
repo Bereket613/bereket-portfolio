@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS projects (
     tech_stack TEXT[], -- Array of strings
     live_demo_url VARCHAR(255),
     github_url VARCHAR(255),
-    category VARCHAR(50), 
+    category VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS experiences (
     description TEXT,
     key_achievements TEXT[],
     tech_stack TEXT[],
+    logo_url VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -53,5 +54,27 @@ CREATE TABLE IF NOT EXISTS profile (
     logo_url VARCHAR(255),
     email VARCHAR(255),
     github VARCHAR(255),
-    linkedin VARCHAR(255)
+    linkedin VARCHAR(255),
+    location VARCHAR(255),
+    resume_url VARCHAR(255)
 );
+
+-- Lightweight anonymous visit tracking for analytics
+CREATE TABLE IF NOT EXISTS visits (
+    id SERIAL PRIMARY KEY,
+    page VARCHAR(255),
+    user_agent VARCHAR(512),
+    visited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Idempotent migrations for pre-existing databases
+ALTER TABLE experiences ADD COLUMN IF NOT EXISTS logo_url VARCHAR(255);
+ALTER TABLE profile ADD COLUMN IF NOT EXISTS location VARCHAR(255);
+ALTER TABLE profile ADD COLUMN IF NOT EXISTS resume_url VARCHAR(255);
+ALTER TABLE projects ALTER COLUMN image_url TYPE VARCHAR(512);
+ALTER TABLE experiences ALTER COLUMN logo_url TYPE VARCHAR(512);
+ALTER TABLE profile ALTER COLUMN logo_url TYPE VARCHAR(512);
+ALTER TABLE profile ALTER COLUMN resume_url TYPE VARCHAR(512);
+
+CREATE INDEX IF NOT EXISTS idx_visits_visited_at ON visits (visited_at);
+CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages (created_at);

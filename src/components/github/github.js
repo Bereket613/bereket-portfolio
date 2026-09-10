@@ -1,119 +1,126 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 
 const GithubStats = () => {
     const [repos, setRepos] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [started, setStarted] = useState(false);
     const [error, setError] = useState(null);
-    const [visibleCount, setVisibleCount] = useState(4); 
+    const [visibleCount, setVisibleCount] = useState(6);
 
-    useEffect(() => {
-        const fetchRepos = async () => {
-            try {
-                const res = await fetch('https://api.github.com/users/Bereket613/repos?sort=updated&per_page=10');
-                if (!res.ok) throw new Error('Failed to fetch GitHub data');
-                const data = await res.json();
-                
-                setRepos(data);
-                setLoading(false);
-            } catch (err) {
-                console.error("GitHub fetch error:", err);
-                setError(err.message);
-                setLoading(false);
-            }
-        };
+    const fetchRepos = async () => {
+        setStarted(true);
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await fetch('https://api.github.com/users/Bereket613/repos?sort=updated&per_page=30');
+            if (!res.ok) throw new Error(`GitHub API returned ${res.status}`);
+            const data = await res.json();
+            setRepos(data);
+        } catch (err) {
+            console.error("GitHub fetch error:", err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        fetchRepos();
-    }, []);
-
-    const showMore = () => setVisibleCount(prev => prev + 4);
-
-    if (error) return null; 
+    const showMore = () => setVisibleCount(prev => prev + 6);
 
     return (
-        <section id="github" className="py-20 px-6 md:px-12 lg:px-24 bg-white dark:bg-gray-800 transition-colors duration-300">
-            <div className="max-w-7xl mx-auto">
-                <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
+        <section id="github" className="py-20 px-6 md:px-12 bg-slate-100/60 dark:bg-slate-900/60">
+            <div className="max-w-6xl mx-auto">
+                <motion.div
+                    initial={{ opacity: 0, y: 12 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-center mb-16"
+                    transition={{ duration: 0.4 }}
                 >
-                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">GitHub Projects</h2>
-                    <p className="max-w-2xl mx-auto text-lg text-gray-600 dark:text-gray-400">
-                        Real-time stats from my recent open-source repositories.
+                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white">GitHub Projects</h2>
+                    <p className="mt-2 text-slate-600 dark:text-slate-400 max-w-2xl">
+                        Live data from my GitHub repositories, fetched on demand.
                     </p>
                 </motion.div>
 
-                {loading ? (
-                    <div className="flex justify-center items-center h-48">
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
+                {!started ? (
+                    <div className="mt-8 text-center">
+                        <button
+                            onClick={fetchRepos}
+                            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-accent hover:text-accent dark:hover:border-teal-400 dark:hover:text-teal-400 transition-colors"
+                        >
+                            <i className="fab fa-github text-lg"></i> View GitHub Projects
+                        </button>
                     </div>
+                ) : loading ? (
+                    <div className="flex justify-center items-center h-40" role="status" aria-label="Loading repositories">
+                        <div className="animate-spin rounded-full h-10 w-10 border-2 border-slate-300 border-t-accent"></div>
+                    </div>
+                ) : error ? (
+                    <div className="mt-8 text-center">
+                        <p className="text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-200 dark:border-red-900 inline-flex items-center gap-2">
+                            <i className="fas fa-triangle-exclamation"></i> Unable to load repositories: {error}
+                        </p>
+                        <div className="mt-4">
+                            <button
+                                onClick={fetchRepos}
+                                className="px-5 py-2 rounded-lg text-sm font-medium border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-accent hover:text-accent dark:hover:border-teal-400 dark:hover:text-teal-400 transition-colors"
+                            >
+                                Try again
+                            </button>
+                        </div>
+                    </div>
+                ) : repos.length === 0 ? (
+                    <p className="mt-8 text-center text-slate-500 dark:text-slate-400">No public repositories found.</p>
                 ) : (
                     <>
-                        <motion.div 
-                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6"
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={{ once: true, amount: 0.1 }}
-                            variants={{
-                                visible: { transition: { staggerChildren: 0.1 } },
-                                hidden: {}
-                            }}
-                        >
-                            <AnimatePresence>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
                             {repos.slice(0, visibleCount).map((repo) => (
-                                <motion.div 
-                                    key={repo.id} 
-                                    className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg hover:border-accent/40 transition-all duration-300 group flex flex-col"
-                                    variants={{
-                                        hidden: { opacity: 0, y: 20 },
-                                        visible: { opacity: 1, y: 0 }
-                                    }}
-                                    exit={{ opacity: 0, scale: 0.9 }}
+                                <div
+                                    key={repo.id}
+                                    className="bg-white dark:bg-slate-900 rounded-lg p-5 border border-slate-200 dark:border-slate-800 hover:border-accent/50 dark:hover:border-teal-400/50 hover:shadow-sm transition-all duration-200 flex flex-col"
                                 >
-                                    <div className="flex justify-between items-start mb-3">
-                                        <h3 className="text-xl font-bold group-hover:text-accent transition-colors truncate">
-                                            <a href={repo.html_url} target="_blank" rel="noopener noreferrer" className="text-gray-900 dark:text-white group-hover:text-accent">
+                                    <div className="flex justify-between items-start gap-3">
+                                        <h3 className="text-base font-semibold">
+                                            <a
+                                                href={repo.html_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-slate-900 dark:text-white hover:text-accent dark:hover:text-teal-400 transition-colors break-all"
+                                            >
                                                 {repo.name}
                                             </a>
                                         </h3>
-                                        <span className="text-xs font-semibold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full whitespace-nowrap ml-2">
-                                            {repo.private ? 'Private' : 'Public'}
-                                        </span>
-                                    </div>
-                                    <p className="text-gray-600 dark:text-gray-400 mb-6 flex-grow line-clamp-2">
-                                        {repo.description ? repo.description : 'No description provided.'}
-                                    </p>
-                                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mt-auto pt-4 border-t border-gray-200 dark:border-gray-800">
                                         {repo.language && (
-                                            <span className="flex items-center gap-1.5">
-                                                <span className="w-3 h-3 rounded-full bg-accent"></span> 
+                                            <span className="text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-full whitespace-nowrap border border-slate-200 dark:border-slate-700">
                                                 {repo.language}
                                             </span>
                                         )}
-                                        <span className="flex items-center gap-1" title="Stars">
-                                            <i className="fas fa-star text-yellow-500"></i> {repo.stargazers_count}
+                                    </div>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 flex-grow line-clamp-2">
+                                        {repo.description || 'No description provided.'}
+                                    </p>
+                                    <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 dark:text-slate-400 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                                        <span className="flex items-center gap-1.5" title="Stars">
+                                            <i className="fas fa-star text-amber-500"></i> {repo.stargazers_count}
                                         </span>
-                                        <span className="flex items-center gap-1" title="Forks">
-                                            <i className="fas fa-code-branch text-gray-500"></i> {repo.forks_count}
+                                        <span className="flex items-center gap-1.5" title="Forks">
+                                            <i className="fas fa-code-branch"></i> {repo.forks_count}
                                         </span>
-                                        <span className="ml-auto text-xs text-gray-500">
-                                            Updated: {new Date(repo.updated_at).toLocaleDateString()}
+                                        <span className="ml-auto">
+                                            Updated {new Date(repo.updated_at).toLocaleDateString()}
                                         </span>
                                     </div>
-                                </motion.div>
+                                </div>
                             ))}
-                            </AnimatePresence>
-                        </motion.div>
-                        
+                        </div>
+
                         {visibleCount < repos.length && (
-                            <div className="text-center mt-12">
-                                <button 
-                                    className="bg-transparent border-2 border-accent text-accent hover:bg-accent hover:text-white px-8 py-3 rounded-full font-medium transition-colors"
+                            <div className="text-center mt-8">
+                                <button
+                                    className="px-6 py-2.5 rounded-lg text-sm font-medium border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-accent hover:text-accent dark:hover:border-teal-400 dark:hover:text-teal-400 transition-colors"
                                     onClick={showMore}
                                 >
-                                    Load More Repositories
+                                    Load more repositories
                                 </button>
                             </div>
                         )}

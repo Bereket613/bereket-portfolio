@@ -24,67 +24,66 @@ const Experience = () => {
   }, []);
 
   return (
-    <section id="experience" className="py-20 px-6 md:px-12 lg:px-24 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 min-h-screen">
-      <div className="max-w-4xl mx-auto">
-        <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
+    <section id="experience" className="py-20 px-6 md:px-12 min-h-screen">
+      <div className="max-w-3xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4 }}
         >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">Experience</h2>
-            <div className="w-24 h-1 bg-accent mx-auto rounded-full"></div>
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Experience</h2>
         </motion.div>
 
         {loading ? (
           <div className="flex justify-center items-center h-48">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
+            <div className="animate-spin rounded-full h-10 w-10 border-2 border-slate-300 border-t-accent"></div>
           </div>
         ) : error ? (
-            <div className="text-center text-red-500 bg-red-100 p-4 rounded-lg">
-                Failed to load experience data: {error}
-            </div>
+          <div className="mt-10 text-center text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-200 dark:border-red-900">
+            Unable to load experience data. Please try again later.
+          </div>
         ) : experiences.length === 0 ? (
-          <div className="text-center text-gray-500 py-12">
-              No experience records found.
+          <div className="text-center text-slate-500 dark:text-slate-400 py-12">
+            No experience records yet.
           </div>
         ) : (
-          <div className="relative border-l-2 border-gray-200 dark:border-gray-700 ml-4 md:ml-0 md:border-l-0">
-            {/* Timeline Line for desktop */}
-            <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 w-0.5 h-full bg-gray-200 dark:bg-gray-700"></div>
-
+          <div className="mt-10 relative border-l-2 border-slate-200 dark:border-slate-800 pl-6 md:pl-8 space-y-10">
             {experiences.map((item, index) => (
-              <motion.div 
-                key={item.id} 
-                initial={{ opacity: 0, y: 30 }}
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                className={`mb-12 flex flex-col md:flex-row items-center justify-between w-full ${index % 2 === 0 ? 'md:flex-row-reverse' : ''}`}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                className="relative"
               >
-                {/* Timeline Dot */}
-                <div className="absolute left-[-9px] md:left-1/2 md:transform md:-translate-x-1/2 w-4 h-4 rounded-full bg-accent border-4 border-gray-50 dark:border-gray-900 z-10"></div>
-                
-                {/* Empty Space for alignment on Desktop */}
-                <div className="hidden md:block w-5/12"></div>
+                {/* Timeline dot */}
+                <div className="absolute -left-[31px] md:-left-[39px] top-1.5 w-3 h-3 rounded-full bg-accent dark:bg-teal-400 border-2 border-slate-50 dark:border-slate-950"></div>
 
-                {/* Content Card */}
-                <div className="w-full md:w-5/12 pl-6 md:pl-0">
-                  <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-shadow duration-300 relative">
-                    {/* Arrow pointing to timeline */}
-                    <div className={`hidden md:block absolute top-6 w-4 h-4 bg-white dark:bg-gray-800 border-t border-l border-gray-100 dark:border-gray-700 transform rotate-45 ${index % 2 === 0 ? '-left-2 -border-r -border-b' : '-right-2 border-r border-b border-t-0 border-l-0'}`}></div>
-                    
-                    <span className="text-accent font-semibold text-sm mb-2 block">{item.duration}</span>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{item.role}</h3>
-                    <h4 className="text-md text-gray-600 dark:text-gray-400 font-medium mb-4">{item.organization}</h4>
-                    
-                    <p className="text-gray-700 dark:text-gray-300 mb-4">{item.description}</p>
-                    
+                <div className="flex items-start gap-4">
+                  {item.logo_url && (
+                    <img
+                      src={item.logo_url}
+                      alt={`${item.organization} logo`}
+                      loading="lazy"
+                      className="w-11 h-11 rounded-lg object-contain bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-1 flex-shrink-0"
+                    />
+                  )}
+                  <div className="flex-1">
+                    <span className="text-sm text-slate-500 dark:text-slate-400">{item.duration}</span>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mt-0.5">{item.role}</h3>
+                    <h4 className="text-slate-600 dark:text-slate-400 font-medium">{item.organization}</h4>
+
+                    {item.description && (
+                      <p className="mt-3 text-slate-600 dark:text-slate-300 leading-relaxed">{item.description}</p>
+                    )}
+
                     {item.key_achievements && item.key_achievements.length > 0 && (
-                      <ul className="mb-4 space-y-2">
+                      <ul className="mt-3 space-y-1.5">
                         {item.key_achievements.map((achievement, idx) => (
-                          <li key={idx} className="flex items-start text-sm text-gray-600 dark:text-gray-400">
-                            <span className="text-accent mr-2 mt-1"><i className="fas fa-check-circle"></i></span>
+                          <li key={idx} className="flex items-start text-sm text-slate-600 dark:text-slate-400">
+                            <span className="text-accent dark:text-teal-400 mr-2 mt-0.5">•</span>
                             {achievement}
                           </li>
                         ))}
@@ -92,9 +91,9 @@ const Experience = () => {
                     )}
 
                     {item.tech_stack && item.tech_stack.length > 0 && (
-                      <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-100 dark:border-gray-700">
+                      <div className="mt-4 flex flex-wrap gap-2">
                         {item.tech_stack.map((tech, idx) => (
-                          <span key={idx} className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded">
+                          <span key={idx} className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-1 rounded border border-slate-200 dark:border-slate-700">
                             {tech}
                           </span>
                         ))}

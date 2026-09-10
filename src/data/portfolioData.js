@@ -13,8 +13,7 @@ export const skillsData = {
         projects: [
             { name: "Diabetes Prediction", link: "https://github.com/Bereket613/Diabetes-ML-Project" },
             { name: "Book Recommendation", link: "https://github.com/Bereket613/Book-Recommendation-System-using-K-Nearest-Neighbors" },
-            { name: "SMS spam classification", link: "https://github.com/Bereket613/Book-Recommendation-System-using-K-Nearest-Neighbors" },
-            { name: "Diabetes Prediction", link: "https://github.com/Bereket613/Diabetes-ML-Project" }
+            { name: "SMS spam classification", link: "https://github.com/Bereket613/SMS-Spam-Classification-using-Machine-Learning" }
         ]
     },
     "AI Development": {
@@ -22,15 +21,14 @@ export const skillsData = {
         projects: [
             { name: "Chat Bot", link: "https://github.com/Bereket613/-AI-Chatbot-using-NLP-TF-IDF" },
             { name: "Rock Paper Scissors Game", link: "https://github.com/Bereket613/rock-paper-scissors-bot" },
-            { name: "Chat Bot", link: "https://github.com/Bereket613/AI-ChatBot" }
+            { name: "Chat Bot (AI-ChatBot)", link: "https://github.com/Bereket613/AI-ChatBot" }
         ]
     },
     "Python": {
         icon: "🐍",
         projects: [
             { name: "Bank Management System", link: "https://github.com/Bereket613/-NEGAT-Bank-Management-System" },
-            { name: "Task Scheduler", link: "https://github.com/Bereket613/-Priority-Based-Task-Scheduler-in-Python" },
-            { name: "Bank Management System", link: "https://github.com/Bereket613/-NEGAT-Bank-Management-System" },
+            { name: "Task Scheduler", link: "https://github.com/Bereket613/-Priority-Based-Task-Scheduler-in-Python" }
         ]
     }
 };

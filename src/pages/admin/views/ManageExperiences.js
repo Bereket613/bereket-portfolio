@@ -3,7 +3,7 @@ import api from '../../../api';
 import { toast } from 'react-toastify';
 import Button from '../../../components/ui/Button';
 
-const emptyExp = { role: '', organization: '', duration: '', description: '', key_achievements: '', tech_stack: '' };
+const emptyExp = { role: '', organization: '', duration: '', description: '', key_achievements: '', tech_stack: '', logo_url: '' };
 
 const ManageExperiences = () => {
     const [experiences, setExperiences] = useState([]);
@@ -126,6 +126,7 @@ const ManageExperiences = () => {
                                 { label: 'Role / Job Title', name: 'role', required: true },
                                 { label: 'Organization', name: 'organization', required: true },
                                 { label: 'Duration (e.g. 2023 – Present)', name: 'duration' },
+                                { label: 'Company Logo URL (optional)', name: 'logo_url' },
                                 { label: 'Tech Stack (comma-separated)', name: 'tech_stack' },
                             ].map(({ label, name, required }) => (
                                 <div key={name}>
