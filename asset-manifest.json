@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/bereket-portfolio/static/css/main.792142cc.css",
-    "main.js": "/bereket-portfolio/static/js/main.9b7c90ea.js",
+    "main.js": "/bereket-portfolio/static/js/main.baa83101.js",
     "static/js/70.6a626c1e.chunk.js": "/bereket-portfolio/static/js/70.6a626c1e.chunk.js",
     "static/js/240.b62012b9.chunk.js": "/bereket-portfolio/static/js/240.b62012b9.chunk.js",
     "static/js/768.16245a87.chunk.js": "/bereket-portfolio/static/js/768.16245a87.chunk.js",
@@ -28,7 +28,7 @@
     "static/media/fa-v4compatibility.woff2": "/bereket-portfolio/static/media/fa-v4compatibility.ea8f94e1d22e0d35ccd4.woff2",
     "index.html": "/bereket-portfolio/index.html",
     "main.792142cc.css.map": "/bereket-portfolio/static/css/main.792142cc.css.map",
-    "main.9b7c90ea.js.map": "/bereket-portfolio/static/js/main.9b7c90ea.js.map",
+    "main.baa83101.js.map": "/bereket-portfolio/static/js/main.baa83101.js.map",
     "70.6a626c1e.chunk.js.map": "/bereket-portfolio/static/js/70.6a626c1e.chunk.js.map",
     "240.b62012b9.chunk.js.map": "/bereket-portfolio/static/js/240.b62012b9.chunk.js.map",
     "768.16245a87.chunk.js.map": "/bereket-portfolio/static/js/768.16245a87.chunk.js.map",
@@ -46,6 +46,6 @@
   },
   "entrypoints": [
     "static/css/main.792142cc.css",
-    "static/js/main.9b7c90ea.js"
+    "static/js/main.baa83101.js"
   ]
 }
