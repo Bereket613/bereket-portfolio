@@ -16,11 +16,14 @@ jobs:
     steps:
       - name: Ping backend health endpoint
         run: |
+          BASE_URL="${{ vars.BACKEND_URL }}"
+          # Fall back to the blueprint-created service URL when the repo variable isn't set
+          if [ -z "$BASE_URL" ]; then BASE_URL="https://bereket-portfolio-api.onrender.com"; fi
+          echo "Pinging $BASE_URL/health"
           for i in 1 2 3; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 "${{ vars.BACKEND_URL }}/health")
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 "$BASE_URL/health")
             echo "attempt $i -> HTTP $code"
             if [ "$code" = "200" ]; then exit 0; fi
             sleep 10
           done
           echo "Backend did not return 200 — check the Render dashboard."
-          # Don't fail the workflow: failing just sends noise; check Render directly.
