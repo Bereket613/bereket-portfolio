@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import api from '../../api';
+import api, { absoluteUrl } from '../../api';
 import { projectsData, projectCategories } from '../../data/portfolioData';
 
 const Work = () => {
@@ -95,7 +95,7 @@ const Work = () => {
                                     {project.image_url && (
                                         <div className="h-40 overflow-hidden bg-slate-100 dark:bg-slate-800">
                                             <img
-                                                src={project.image_url}
+                                                src={absoluteUrl(project.image_url)}
                                                 alt={`${project.title} screenshot`}
                                                 loading="lazy"
                                                 className="w-full h-full object-cover"
@@ -198,7 +198,7 @@ const Work = () => {
                         >
                             {selectedProject.image_url && (
                                 <div className="h-52 bg-slate-100 dark:bg-slate-800">
-                                    <img src={selectedProject.image_url} alt={`${selectedProject.title} screenshot`} className="w-full h-full object-cover" />
+                                    <img src={absoluteUrl(selectedProject.image_url)} alt={`${selectedProject.title} screenshot`} className="w-full h-full object-cover" />
                                 </div>
                             )}
 

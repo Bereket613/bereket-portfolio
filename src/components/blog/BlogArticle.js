@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import api from '../../api';
+import api, { absoluteUrl } from '../../api';
 import Markdown from './Markdown';
 
 const SITE_BASE = 'https://Bereket613.github.io/bereket-portfolio/';
@@ -173,7 +173,7 @@ const BlogArticle = () => {
             {/* Cover image (optional) */}
             {post.cover_image_url && (
               <img
-                src={post.cover_image_url}
+                src={absoluteUrl(post.cover_image_url)}
                 alt={`Cover for ${post.title}`}
                 className="w-full rounded-lg border border-slate-200 dark:border-slate-800 mt-6"
                 loading="lazy"

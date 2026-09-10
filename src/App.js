@@ -4,6 +4,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider, ThemeContext } from './ThemeContext';
 import { ToastContainer } from 'react-toastify';
+import { API_URL } from './api';
 
 import Navbar from './components/Navbar/navbar';
 import Intro from './components/Intro/intro';
@@ -140,7 +141,7 @@ function ThemedApp() {
   useEffect(() => {
     if (sessionStorage.getItem('visit-tracked')) return;
     sessionStorage.setItem('visit-tracked', '1');
-    fetch(`${process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000'}/api/track`, {
+    fetch(`${API_URL}/api/track`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ page: location.pathname }),

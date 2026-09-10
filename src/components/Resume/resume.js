@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../api';
+import api, { absoluteUrl } from '../../api';
 import { experienceData as fallbackExperience, projectsData as fallbackProjects } from '../../data/portfolioData';
 
 const ResumePage = () => {
@@ -31,7 +31,7 @@ const ResumePage = () => {
         window.print();
     };
 
-    const resumePdfUrl = profile.resume_url || (process.env.PUBLIC_URL + '/resume.pdf');
+    const resumePdfUrl = profile.resume_url ? absoluteUrl(profile.resume_url) : (process.env.PUBLIC_URL + '/resume.pdf');
 
     if (loading) return <div className="min-h-screen pt-32 pb-20 flex justify-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div></div>;
 
@@ -58,7 +58,7 @@ const ResumePage = () => {
                     {/* Header Layout */}
                     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 mb-10 pb-8 border-b-2 border-slate-100 print:mb-6 print:pb-6">
                         {profile.logo_url && (
-                            <img src={profile.logo_url} alt="Logo" className="w-24 h-24 object-contain rounded-xl print:w-20 print:h-20" />
+                            <img src={absoluteUrl(profile.logo_url)} alt="Logo" className="w-24 h-24 object-contain rounded-xl print:w-20 print:h-20" />
                         )}
                         <div className="flex-1 text-center sm:text-left">
                             <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">{profile.name || 'Bereket Getaw'}</h1>
