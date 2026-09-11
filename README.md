@@ -69,10 +69,12 @@ The backend has its own `.env.example` under `server/`.
 3. Add your frontend origin (e.g. `https://<user>.github.io`) to the CORS whitelist in `server/server.js` if different from the defaults.
 4. Uploaded images/CVs are stored on the server disk under `server/uploads`. For multi-instance deployments prefer object storage (S3/Cloudinary) instead.
 
-### Database (Supabase or Neon)
+### Database (Neon — recommended, permanent free tier)
 
-1. Create a PostgreSQL instance (Supabase / Neon) and copy the connection string.
-2. Set it as `DATABASE_URL` on the backend service. SSL is enabled automatically for non-localhost connections (see `server/db.js`).
-3. The schema (`server/schema.sql`) is applied automatically on server startup — including the `visits` analytics table and the `logo_url`/`location`/`resume_url` columns.
-4. Create the first admin once via `POST /api/admin/setup` with `{ "username": "...", "password": "..." }` (endpoint locks itself after the first admin exists).
+1. Sign up at [neon.com](https://neon.com) (GitHub login works) and create a project, e.g. `bereket-portfolio`.
+2. Copy the **pooled connection string** (Connect → Pooled connection), e.g. `postgresql://user:pass@ep-xxxx-pooler.<region>.aws.neon.tech/neondb?sslmode=require`.
+3. When applying the Render blueprint (or editing the web service's environment), paste it as `DATABASE_URL`.
+4. The schema (`server/schema.sql`) and the default skills seed are applied automatically on server startup — including the `visits` analytics table and the `blog_posts` table.
+5. Each Neon project is a fully isolated database — the portfolio's data never touches other projects.
+6. Create the first admin once via `POST /api/admin/setup` with `{ "username": "...", "password": "..." }` (endpoint locks itself after the first admin exists).
 

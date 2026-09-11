@@ -1,11 +1,15 @@
 # Render Blueprint — deploys the Express API web service.
 # Apply it at: https://render.com/deploy?repo=https://github.com/Bereket613/bereket-portfolio
 #
-# When applying, Render will prompt you for DATABASE_URL:
-#   Render Dashboard -> Postgres -> your database -> "Connections" tab ->
-#   copy the "External Database URL" and paste it there.
+# DATABASE_URL comes from Neon (free permanent PostgreSQL, completely isolated):
+#   1. Sign up at https://neon.com (GitHub login works) and create a project
+#      named e.g. "bereket-portfolio"
+#   2. Open "Connect" -> choose "Pooled connection" -> copy the string
+#      (looks like postgresql://user:pass@ep-xxxx-pooler.<region>.aws.neon.tech/neondb?sslmode=require)
+#   3. Paste it when the Render blueprint prompts you for DATABASE_URL
 #
 # JWT_SECRET is generated automatically — no other input needed.
+# SSL is enabled automatically for non-localhost connections (server/db.js).
 
 services:
   - type: web
@@ -19,6 +23,6 @@ services:
     healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
-        sync: false # paste your PostgreSQL "External Database URL" when prompted
+        sync: false # paste your Neon pooled connection string when prompted
       - key: JWT_SECRET
         generateValue: true
