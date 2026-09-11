@@ -1,6 +1,5 @@
 // Runtime configuration for the deployed frontend.
-// Set API_URL to your backend URL (e.g. https://your-app.onrender.com).
-// Editing this file on the deployed site takes effect without a rebuild.
+// API_URL points at the Render backend deployed from this repo.
 window.__APP_CONFIG__ = {
-  API_URL: ""
+  API_URL: "https://bereket-portfolio-api.onrender.com"
 };
