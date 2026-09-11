@@ -130,7 +130,8 @@ app.get('/api/projects', async (req, res) => {
         const result = await db.query('SELECT * FROM projects ORDER BY created_at DESC');
         res.json(result.rows);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -143,7 +144,8 @@ app.post('/api/projects', authenticateToken, async (req, res) => {
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -158,7 +160,8 @@ app.put('/api/projects/:id', authenticateToken, async (req, res) => {
         if (result.rows.length === 0) return res.status(404).json({ message: 'Project not found' });
         res.json(result.rows[0]);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -169,7 +172,8 @@ app.delete('/api/projects/:id', authenticateToken, async (req, res) => {
         if (result.rows.length === 0) return res.status(404).json({ message: 'Project not found' });
         res.json({ message: 'Project deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -179,7 +183,8 @@ app.get('/api/experiences', async (req, res) => {
         const result = await db.query('SELECT * FROM experiences ORDER BY created_at DESC');
         res.json(result.rows);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -192,7 +197,8 @@ app.post('/api/experiences', authenticateToken, async (req, res) => {
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -207,7 +213,8 @@ app.put('/api/experiences/:id', authenticateToken, async (req, res) => {
         if (result.rows.length === 0) return res.status(404).json({ message: 'Experience not found' });
         res.json(result.rows[0]);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -218,7 +225,8 @@ app.delete('/api/experiences/:id', authenticateToken, async (req, res) => {
         if (result.rows.length === 0) return res.status(404).json({ message: 'Experience not found' });
         res.json({ message: 'Experience deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -232,7 +240,8 @@ app.post('/api/messages', async (req, res) => {
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -241,7 +250,8 @@ app.get('/api/messages', authenticateToken, async (req, res) => {
         const result = await db.query('SELECT * FROM messages ORDER BY created_at DESC');
         res.json(result.rows);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -252,7 +262,8 @@ app.put('/api/messages/:id/read', authenticateToken, async (req, res) => {
         if (result.rows.length === 0) return res.status(404).json({ message: 'Message not found' });
         res.json(result.rows[0]);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -263,7 +274,8 @@ app.delete('/api/messages/:id', authenticateToken, async (req, res) => {
         if (result.rows.length === 0) return res.status(404).json({ message: 'Message not found' });
         res.json({ message: 'Message deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -274,7 +286,8 @@ app.get('/api/profile', async (req, res) => {
         const result = await db.query('SELECT * FROM profile LIMIT 1');
         res.json(result.rows[0] || {});
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -297,7 +310,8 @@ app.put('/api/profile', authenticateToken, async (req, res) => {
         }
         res.json(result.rows[0]);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -319,7 +333,8 @@ app.post('/api/upload/resume', authenticateToken, uploadResume.single('file'), a
         }
         res.status(201).json({ url: resumeUrl });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -379,7 +394,8 @@ app.get('/api/analytics', authenticateToken, async (req, res) => {
             projectsByCategory: byCategory.rows
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -389,7 +405,8 @@ app.get('/api/skills', async (req, res) => {
         const result = await db.query('SELECT * FROM skills ORDER BY sort_order, id');
         res.json(result.rows);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -403,7 +420,8 @@ app.post('/api/skills', authenticateToken, async (req, res) => {
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -419,7 +437,8 @@ app.put('/api/skills/:id', authenticateToken, async (req, res) => {
         if (result.rows.length === 0) return res.status(404).json({ message: 'Skill not found' });
         res.json(result.rows[0]);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -430,7 +449,8 @@ app.delete('/api/skills/:id', authenticateToken, async (req, res) => {
         if (result.rows.length === 0) return res.status(404).json({ message: 'Skill not found' });
         res.json({ message: 'Skill deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -473,7 +493,8 @@ app.get('/api/blog', async (req, res) => {
             pages: Math.max(1, Math.ceil(parseInt(count.rows[0].count) / limit))
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -485,7 +506,8 @@ app.get('/api/blog-categories', async (req, res) => {
         );
         res.json(result.rows.map(r => r.category));
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -499,7 +521,8 @@ app.get('/api/blog/:slug', async (req, res) => {
         if (result.rows.length === 0) return res.status(404).json({ message: 'Article not found' });
         res.json(result.rows[0]);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -519,7 +542,8 @@ app.get('/api/blog/:slug/adjacent', async (req, res) => {
         );
         res.json({ prev: prev.rows[0] || null, next: next.rows[0] || null });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -540,7 +564,8 @@ app.get('/api/admin/blog', authenticateToken, async (req, res) => {
         );
         res.json(result.rows);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -573,7 +598,8 @@ app.post('/api/blog', authenticateToken, async (req, res) => {
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -606,7 +632,8 @@ app.put('/api/blog/:id', authenticateToken, async (req, res) => {
         );
         res.json(result.rows[0]);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
@@ -618,7 +645,8 @@ app.delete('/api/blog/:id', authenticateToken, async (req, res) => {
         if (result.rows.length === 0) return res.status(404).json({ message: 'Post not found' });
         res.json({ message: 'Post deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
     }
 });
 
