@@ -7,6 +7,7 @@ const ManageProfile = () => {
         name: '', title: '', about: '', logo_url: '', email: '', github: '', linkedin: ''
     });
     const [loading, setLoading] = useState(true);
+    const [passwordForm, setPasswordForm] = useState({ current: '', next: '' });
 
     useEffect(() => {
         fetchProfile();
@@ -48,6 +49,20 @@ const ManageProfile = () => {
             toast.success('Resume PDF uploaded');
         } catch (error) {
             toast.error(error.response?.data?.message || 'Resume upload failed');
+        }
+    };
+
+    const handlePasswordChange = async (e) => {
+        e.preventDefault();
+        try {
+            await api.put('/api/admin/password', {
+                currentPassword: passwordForm.current,
+                newPassword: passwordForm.next
+            });
+            toast.success('Password updated');
+            setPasswordForm({ current: '', next: '' });
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Failed to update password');
         }
     };
 
@@ -112,6 +127,23 @@ const ManageProfile = () => {
                     </div>
                     <button type="submit" className="bg-accent text-white px-6 py-2 rounded-lg hover:bg-accentDark transition mt-4 shadow-lg shadow-accent/30 font-medium">
                         Save CV Profile
+                    </button>
+                </form>
+
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mt-10 pt-6 border-t border-gray-200 dark:border-gray-700">Change admin password</h3>
+                <form onSubmit={handlePasswordChange} className="space-y-4 mt-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current password</label>
+                            <input type="password" value={passwordForm.current} onChange={e => setPasswordForm({...passwordForm, current: e.target.value})} required autoComplete="current-password" className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-accent outline-none" />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New password (min 8 chars)</label>
+                            <input type="password" value={passwordForm.next} onChange={e => setPasswordForm({...passwordForm, next: e.target.value})} required minLength={8} autoComplete="new-password" className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-accent outline-none" />
+                        </div>
+                    </div>
+                    <button type="submit" className="bg-slate-800 dark:bg-slate-700 text-white px-6 py-2 rounded-lg hover:bg-slate-700 transition font-medium">
+                        Update password
                     </button>
                 </form>
             </div>

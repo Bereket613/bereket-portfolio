@@ -101,6 +101,26 @@ app.post('/api/admin/setup', async (req, res) => {
     }
 });
 
+// Change admin password (requires current password)
+app.put('/api/admin/password', authenticateToken, async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        if (!currentPassword || !newPassword || String(newPassword).length < 8) {
+            return res.status(400).json({ message: 'New password must be at least 8 characters' });
+        }
+        const result = await db.query('SELECT * FROM admins WHERE username = $1', [req.user.username]);
+        if (result.rows.length === 0) return res.status(404).json({ message: 'Admin not found' });
+        const isMatch = await bcrypt.compare(currentPassword, result.rows[0].password_hash);
+        if (!isMatch) return res.status(401).json({ message: 'Current password is incorrect' });
+        const hashed = await bcrypt.hash(newPassword, 10);
+        await db.query('UPDATE admins SET password_hash = $1 WHERE username = $2', [hashed, req.user.username]);
+        res.json({ message: 'Password updated successfully' });
+    } catch (error) {
+        console.error('API error:', error);
+        res.status(500).json({ message: error.message || 'Database error' });
+    }
+});
+
 app.post('/api/admin/login', async (req, res) => {
     try {
         const { username, password } = req.body;
